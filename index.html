@@ -124,7 +124,6 @@
         display: none; position: fixed; inset: 0; background-color: rgba(250, 250, 250, 0.98); z-index: 99999; flex-direction: column; justify-content: center; align-items: center; text-align: center;
     }
     
-    /* Panel de Finanzas del Ticket */
     .finance-box { background: var(--gray-50); padding: 15px; border-radius: 8px; border: 1px solid var(--gray-100); margin-bottom: 15px; font-size: 14px; }
   </style>
 </head>
@@ -146,10 +145,11 @@
       </div>
       
       <h2 style="color: var(--blue-800); margin-bottom: 10px;">🎟️ TicketsApp</h2>
-      <p style="color: var(--gray-600); margin-bottom: 25px; font-size: 14px;">Ingrese su código de acceso</p>
+      <p style="color: var(--gray-600); margin-bottom: 15px; font-size: 14px;">Ingrese código de acceso o el nombre del evento para entrar directo.</p>
+      <p id="lbl-cargando-nube" style="font-size:12px; color:var(--amber-600); font-weight:bold; margin-bottom:15px;">⏳ Sincronizando sistema...</p>
       
-      <input type="password" id="login-pass" placeholder="****" style="text-align: center; font-size: 24px; letter-spacing: 5px;" onkeypress="if(event.key === 'Enter') verificarLogin()">
-      <button class="btn btn-blue" onclick="verificarLogin()">Entrar al Sistema</button>
+      <input type="password" id="login-pass" placeholder="****" style="text-align: center; font-size: 24px; letter-spacing: 5px;" onkeypress="if(event.key === 'Enter') verificarLogin()" disabled>
+      <button class="btn btn-blue" id="btn-login-ingresar" onclick="verificarLogin()" disabled>Entrar al Sistema</button>
     </div>
   </div>
 
@@ -171,9 +171,9 @@
 
   <div class="container" id="main-container" style="display:none;">
     
-    <div id="view-loading" class="view-section view-active panel" style="text-align: center;">
-      <h2 style="color: var(--blue-600);">⏳ Conectando con la nube...</h2>
-      <p>Cargando datos del sistema...</p>
+    <div id="view-loading" class="view-section panel" style="text-align: center;">
+      <h2 style="color: var(--blue-600);">⏳ Conectando...</h2>
+      <p>Procesando información...</p>
     </div>
 
     <div id="view-eventos" class="view-section">
@@ -234,7 +234,7 @@
                 <div>N°</div>
                 <div>Nombre / Estado Financiero</div>
                 <div>Grado</div>
-                <div style="text-align: center;">Estado</div>
+                <div style="text-align: center;">Estado actual</div>
             </div>
             <div id="lista-tickets"></div>
             </div>
@@ -308,6 +308,20 @@
     </div>
   </div>
 
+  <div class="modal-overlay" id="modal-editar-vendedor">
+    <div class="modal">
+      <h3 style="color: var(--blue-800); margin-bottom: 15px;">✏️ Editar Vendedor</h3>
+      <label>Nombre del Vendedor</label>
+      <input type="text" id="edit-vend-nombre">
+      <label>Tickets Asignados</label>
+      <input type="number" id="edit-vend-cantidad">
+      <div class="btn-row">
+        <button class="btn btn-gray" onclick="cerrarModal('modal-editar-vendedor')">Cancelar</button>
+        <button class="btn btn-blue" onclick="guardarEdicionVendedor()">Guardar Cambios</button>
+      </div>
+    </div>
+  </div>
+
   <div class="modal-overlay" id="modal-compra">
     <div class="modal">
       <h3 style="color: var(--blue-800); margin-bottom: 15px;">Registrar Ticket</h3>
@@ -332,7 +346,7 @@
       <p style="margin-bottom: 20px;">Has vendido todos los tickets que se te asignaron. Contacta al administrador si necesitas más.</p>
       <div class="btn-row">
         <button class="btn btn-gray" onclick="cerrarModal('modal-limite-tickets')">Aceptar y Salir</button>
-        <button class="btn" style="background:var(--amber-600);" onclick="solicitarMasTickets()">Solicitar más</button>
+        <button class="btn" style="background:var(--amber-600); color:white; border:none; padding:12px; border-radius:8px; font-weight:bold; width:100%; cursor:pointer;" onclick="solicitarMasTickets()">Solicitar más</button>
       </div>
     </div>
   </div>
@@ -442,23 +456,47 @@
     let currentEventoId = null;
     let currentVendedorId = null;
     let currentTicketId = null;
+    let currentEditVendedorId = null;
     
     let isAdmin = false;
     let editMode = false;
+    let directEventMode = false; // Define si el usuario entró directo por nombre de evento
 
-    // VERIFICAR MANTENIMIENTO AL CARGAR LA PÁGINA
+    // VERIFICAR MANTENIMIENTO Y CARGAR DATOS AL INICIAR
     window.onload = async () => {
         if(SCRIPT_URL !== "AQUÍ_VA_TU_URL_DE_APPS_SCRIPT") {
             try {
-                const res = await fetch(SCRIPT_URL + "?tipo=check_mantenimiento");
-                const data = await res.json();
-                if (data.mantenimiento === true) {
+                const resM = await fetch(SCRIPT_URL + "?tipo=check_mantenimiento");
+                const dataM = await resM.json();
+                if (dataM.mantenimiento === true) {
                     document.getElementById("pantalla-mantenimiento").style.display = 'flex';
                     document.getElementById("login-overlay").classList.remove('open');
+                    return; // Detiene si está en mantenimiento
                 }
+                
+                // Carga la data silenciosamente mientras el usuario ve la pantalla de login
+                const res = await fetch(SCRIPT_URL + "?tipo=obtener_todo");
+                const data = await res.json();
+                dbEventos = data.eventos || [];
+                dbVendedores = data.vendedores || [];
+                dbTickets = data.tickets || [];
+                
+                document.getElementById('lbl-cargando-nube').innerText = "✅ Sistema listo";
+                document.getElementById('lbl-cargando-nube').style.color = "var(--green-600)";
+                document.getElementById('login-pass').disabled = false;
+                document.getElementById('btn-login-ingresar').disabled = false;
+
             } catch (e) {
                 console.log(e); 
+                document.getElementById('lbl-cargando-nube').innerText = "⚠️ Error de red.";
+                document.getElementById('lbl-cargando-nube').style.color = "var(--red-600)";
             }
+        } else {
+            // Datos de prueba locales
+            dbEventos = [{ id: 1, tema: "Evento de Prueba", total: 100, precio: 10.00 }];
+            document.getElementById('lbl-cargando-nube').innerText = "✅ Sistema Local Listo";
+            document.getElementById('login-pass').disabled = false;
+            document.getElementById('btn-login-ingresar').disabled = false;
         }
     };
 
@@ -486,20 +524,54 @@
         document.body.style.cursor = "default";
     }
 
-    // 1. LOGIN
+    // 1. LOGIN MEJORADO (Admite ingreso directo por Evento)
     function verificarLogin() {
-        const pass = document.getElementById('login-pass').value;
+        const pass = document.getElementById('login-pass').value.trim();
+        if(!pass) return alert("Ingrese código de acceso.");
+
         if(pass === "Admin") {
             isAdmin = true;
-            document.getElementById('user-role').innerText = "MODO ADMINISTRADOR";
-            iniciarSistema();
+            directEventMode = false;
+            iniciarSistemaGlobal("MODO ADMINISTRADOR");
         } else if (pass === "1234") {
             isAdmin = false;
-            document.getElementById('user-role').innerText = "MODO VENDEDOR";
-            iniciarSistema();
+            directEventMode = false;
+            iniciarSistemaGlobal("MODO VENDEDOR");
         } else {
-            alert("❌ Contraseña incorrecta");
+            // Verificar si el texto escrito coincide con el nombre de algún evento
+            const eventoEncontrado = dbEventos.find(e => e.tema.toLowerCase() === pass.toLowerCase());
+            
+            if (eventoEncontrado) {
+                isAdmin = false;
+                directEventMode = true; // Se bloquea al usuario en este evento
+                document.getElementById('user-role').innerText = "MODO VENDEDOR";
+                document.getElementById('login-overlay').classList.remove('open');
+                document.getElementById('main-header').style.display = 'flex';
+                document.getElementById('main-container').style.display = 'block';
+                document.getElementById('btn-search').style.display = 'block';
+                document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
+                
+                // Va directo al evento encontrado
+                abrirEvento(eventoEncontrado.id);
+            } else {
+                alert("❌ Contraseña o Evento incorrecto.");
+            }
         }
+    }
+
+    function iniciarSistemaGlobal(rol) {
+        document.getElementById('user-role').innerText = rol;
+        document.getElementById('login-overlay').classList.remove('open');
+        document.getElementById('main-header').style.display = 'flex';
+        document.getElementById('main-container').style.display = 'block';
+        document.getElementById('btn-search').style.display = 'block';
+
+        document.querySelectorAll('.admin-only').forEach(el => {
+            el.style.display = isAdmin ? 'flex' : 'none';
+        });
+
+        renderEventos();
+        showView('view-eventos');
     }
 
     function cerrarSesion() {
@@ -510,48 +582,7 @@
         currentEventoId = null;
         currentVendedorId = null;
         editMode = false;
-    }
-
-    function iniciarSistema() {
-        document.getElementById('login-overlay').classList.remove('open');
-        document.getElementById('main-header').style.display = 'flex';
-        document.getElementById('main-container').style.display = 'block';
-        document.getElementById('btn-search').style.display = 'block';
-
-        document.querySelectorAll('.admin-only').forEach(el => {
-            el.style.display = isAdmin ? 'flex' : 'none';
-        });
-
-        cargarDatosDesdeNube();
-    }
-
-    // 2. CARGAR DATOS
-    async function cargarDatosDesdeNube() {
-        showView('view-loading');
-        try {
-            if(SCRIPT_URL === "AQUÍ_VA_TU_URL_DE_APPS_SCRIPT") {
-                alert("⚠️ Funciona modo local. Falta conectar a Google Sheets.");
-                dbEventos = [{ id: 1, tema: "Evento de Prueba", total: 100, precio: 10.00 }];
-                dbVendedores = [];
-                dbTickets = [];
-            } else {
-                const res = await fetch(SCRIPT_URL + "?tipo=obtener_todo");
-                const data = await res.json();
-                dbEventos = data.eventos || [];
-                dbVendedores = data.vendedores || [];
-                dbTickets = data.tickets || [];
-            }
-
-            renderEventos();
-            showView('view-eventos');
-            document.getElementById('btn-back').style.display = 'none';
-            document.getElementById('btn-edit').style.display = 'none';
-
-        } catch (error) {
-            console.error(error);
-            alert("❌ Error conectando a la nube. Revisa tu conexión a internet.");
-            showView('view-eventos');
-        }
+        directEventMode = false;
     }
 
     // 3. VISTAS
@@ -568,10 +599,15 @@
             renderEventoDetalle();
             showView('view-evento-detalle');
         } else if (currentEventoId !== null) {
-            currentEventoId = null;
-            renderEventos();
-            showView('view-eventos');
-            document.getElementById('btn-back').style.display = 'none';
+            // Si entró directo por nombre de evento, al darle volver se cierra la sesión
+            if(directEventMode) {
+                cerrarSesion();
+            } else {
+                currentEventoId = null;
+                renderEventos();
+                showView('view-eventos');
+                document.getElementById('btn-back').style.display = 'none';
+            }
         }
     }
 
@@ -609,7 +645,10 @@
             return;
         }
 
-        let filtrados = dbTickets.filter(t => {
+        // Si está en modo de evento directo, solo busca dentro de su evento
+        let ticketsParaBuscar = directEventMode ? dbTickets.filter(t => t.eventoId === currentEventoId) : dbTickets;
+
+        let filtrados = ticketsParaBuscar.filter(t => {
             const nombreStr = (t.nombre || "").toLowerCase();
             const numStr = (t.numero || "").toString();
             return nombreStr.includes(query) || numStr.includes(query);
@@ -799,13 +838,56 @@
 
         vends.forEach(v => {
             const vendidos = dbTickets.filter(t => t.vendedorId === v.id).length;
+            let btnEditVendedor = isAdmin ? `<button class="badge bg-blue" style="padding: 4px 8px; margin-left: 10px; border: none; cursor: pointer;" onclick="abrirModalEditarVendedor(event, ${v.id})">✏️</button>` : '';
+
             contenedor.innerHTML += `
                 <div class="list-item grid-sellers" onclick="abrirVendedor(${v.id})">
-                    <div style="font-weight: bold;">👤 ${v.nombre}</div>
+                    <div style="font-weight: bold; display: flex; align-items: center;">👤 ${v.nombre} ${btnEditVendedor}</div>
                     <div style="text-align: center;">${v.asignados}</div>
                     <div style="text-align: center; color: var(--green-600); font-weight:bold;">${vendidos}</div>
                 </div>`;
         });
+    }
+
+    function abrirModalEditarVendedor(event, id) {
+        event.stopPropagation();
+        currentEditVendedorId = id;
+        const v = dbVendedores.find(x => x.id === id);
+        
+        document.getElementById('edit-vend-nombre').value = v.nombre;
+        document.getElementById('edit-vend-cantidad').value = v.asignados;
+        
+        abrirModal('modal-editar-vendedor');
+    }
+
+    async function guardarEdicionVendedor() {
+        const nombre = document.getElementById('edit-vend-nombre').value;
+        const asignados = parseInt(document.getElementById('edit-vend-cantidad').value);
+        if(!nombre || !asignados) return alert("Faltan datos.");
+
+        const v = dbVendedores.find(x => x.id === currentEditVendedorId);
+        const ev = dbEventos.find(e => e.id === currentEventoId);
+        
+        const vendidos = dbTickets.filter(t => t.vendedorId === currentEditVendedorId).length;
+        if(asignados < vendidos) return alert(`❌ No puedes reducir a ${asignados}. Este vendedor ya vendió ${vendidos} tickets.`);
+
+        const otrosVendedores = dbVendedores.filter(vend => vend.eventoId === currentEventoId && vend.id !== currentEditVendedorId);
+        const asigOtros = otrosVendedores.reduce((acc, curr) => acc + parseInt(curr.asignados), 0);
+        const disponibles = ev.total - asigOtros;
+
+        if (asignados > disponibles) {
+            return alert(`❌ Error: Solo quedan ${disponibles} tickets disponibles para el evento si restamos lo de otros vendedores.`);
+        }
+
+        v.nombre = nombre;
+        v.asignados = asignados;
+
+        if(SCRIPT_URL !== "AQUÍ_VA_TU_URL_DE_APPS_SCRIPT") {
+            await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ tipo_post: "editar_vendedor", id: v.id, nombre: nombre, asignados: asignados }) });
+        }
+
+        cerrarModal('modal-editar-vendedor'); 
+        renderEventoDetalle();
     }
 
     async function guardarVendedor() {
@@ -885,13 +967,11 @@
             let pagado = parseFloat(t.pagado) || 0;
             let deuda = precioTicket - pagado;
             
-            // Clase de estado para el badge
             let cls = 'status-nopagado';
             if (t.estado === 'Ya retiró su producto') cls = 'status-retirado';
             else if (pagado >= precioTicket) cls = 'status-pagado';
             else if (pagado > 0) cls = 'status-parcial';
 
-            // Estilos de retiro
             let rowStyle = '';
             let nameStyle = '';
             if (t.estado === 'Ya retiró su producto') {
@@ -952,7 +1032,7 @@
 
         if(!nombre || !grado || !seccion) return alert("Completa los datos.");
 
-        const ahora = new Date().toLocaleString('es-ES'); // Fecha y hora local
+        const ahora = new Date().toLocaleString('es-ES'); 
 
         const nuevo = { 
             id: Date.now(), 
@@ -1236,7 +1316,6 @@
             });
         }
         
-        // Fila de totales
         html += `<tr style="background:#f9f9f9; font-weight:bold; font-size:14px;">
                     <td colspan="3" style="text-align:right; padding:10px; border:1px solid #ddd;">TOTALES:</td>
                     <td style="text-align:center; padding:10px; border:1px solid #ddd; color:green;">$${sumaAbonos.toFixed(2)}</td>
@@ -1245,13 +1324,7 @@
 
         html += `</table></div>`;
 
-        const container = document.createElement('div');
-        container.innerHTML = html;
-        container.style.position = 'fixed';
-        container.style.top = '200vh'; 
-        container.style.left = '0';
-        document.body.appendChild(container);
-
+        // Se envía el HTML directo como texto a la librería html2pdf, evitando el contenedor invisible
         try {
             const opt = {
                 margin: 10,
@@ -1261,12 +1334,11 @@
                 jsPDF: { unit: 'mm', format: 'letter', orientation: 'portrait' }
             };
 
-            await html2pdf().set(opt).from(container).save();
+            await html2pdf().set(opt).from(html).save();
         } catch (error) {
             console.error("Error al generar PDF: ", error);
             alert("❌ Hubo un error al generar el archivo PDF.");
         } finally {
-            document.body.removeChild(container);
             document.getElementById('btn-generar-pdf').disabled = false;
             document.getElementById('lbl-pdf-status').style.display = 'none';
             cerrarModal('modal-pdf');
