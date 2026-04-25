@@ -464,7 +464,7 @@
 
     // VERIFICAR MANTENIMIENTO Y CARGAR DATOS AL INICIAR
     window.onload = async () => {
-        if(SCRIPT_URL !== "AQUÍ_VA_TU_URL_DE_APPS_SCRIPT") {
+        if(SCRIPT_URL !== "https://script.google.com/macros/s/AKfycbyt95UkpLvkUZEnA3NTSDhL1OULcg5MiGG7kklF8TnE71owY5bMjqFXIeJRaVN00H5APQ/exec") {
             try {
                 const resM = await fetch(SCRIPT_URL + "?tipo=check_mantenimiento");
                 const dataM = await resM.json();
@@ -766,7 +766,7 @@
         ev.total = total;
         ev.precio = precio;
         
-        if(SCRIPT_URL !== "AQUÍ_VA_TU_URL_DE_APPS_SCRIPT") {
+        if(SCRIPT_URL !== "https://script.google.com/macros/s/AKfycbyt95UkpLvkUZEnA3NTSDhL1OULcg5MiGG7kklF8TnE71owY5bMjqFXIeJRaVN00H5APQ/exec") {
             await fetch(SCRIPT_URL, { 
                 method: 'POST', 
                 mode: 'no-cors', 
