@@ -45,10 +45,7 @@
         box-shadow: 0 4px 6px rgba(0,0,0,0.1);
     }
 
-    .header h1 {
-        font-size: 20px;
-        margin: 0;
-    }
+    .header h1 { font-size: 20px; margin: 0; }
 
     .header-logo {
         width: 45px;
@@ -61,17 +58,8 @@
         cursor: pointer;
     }
     
-    .web-logo-container {
-        text-align: center;
-        margin-bottom: 10px;
-    }
-
-    .web-logo {
-        width: 180px;
-        height: auto;
-        display: inline-block;
-        cursor: pointer;
-    }
+    .web-logo-container { text-align: center; margin-bottom: 10px; }
+    .web-logo { width: 180px; height: auto; display: inline-block; cursor: pointer; }
 
     .btn-back {
         background: var(--amber-600);
@@ -84,66 +72,21 @@
         font-size: 13px;
     }
 
-    .container {
-        max-width: 900px;
-        margin: 20px auto;
-        padding: 0 20px;
-    }
-
-    .panel {
-        background: white;
-        border-radius: 10px;
-        padding: 20px;
-        margin-bottom: 20px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-    }
+    .container { max-width: 900px; margin: 20px auto; padding: 0 20px; }
+    .panel { background: white; border-radius: 10px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
     
-    .view-section {
-        display: none;
-    }
-
-    .view-active {
-        display: block;
-    }
+    .view-section { display: none; }
+    .view-active { display: block; }
 
     /* INPUTS & BUTTONS */
-    label {
-        font-weight: bold;
-        font-size: 12px;
-        color: var(--gray-600);
-        display: block;
-        margin-bottom: 5px;
-        text-transform: uppercase;
-    }
-
+    label { font-weight: bold; font-size: 12px; color: var(--gray-600); display: block; margin-bottom: 5px; text-transform: uppercase; }
     input[type="text"], input[type="password"], input[type="number"], select {
-        width: 100%;
-        padding: 10px;
-        margin-bottom: 15px;
-        border: 1.5px solid var(--gray-100);
-        border-radius: 8px;
-        font-size: 14px;
-        outline: none;
+        width: 100%; padding: 10px; margin-bottom: 15px; border: 1.5px solid var(--gray-100); border-radius: 8px; font-size: 14px; outline: none;
     }
-
-    input[readonly] {
-        background-color: #e9ecef;
-        color: var(--blue-800);
-        font-weight: bold;
-        cursor: not-allowed;
-    }
+    input[readonly] { background-color: #e9ecef; color: var(--blue-800); font-weight: bold; cursor: not-allowed; }
     
     .btn {
-        padding: 12px;
-        border-radius: 8px;
-        font-weight: bold;
-        cursor: pointer;
-        border: none;
-        color: white;
-        text-align: center;
-        width: 100%;
-        font-size: 14px;
-        margin-bottom: 10px;
+        padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; border: none; color: white; text-align: center; width: 100%; font-size: 14px; margin-bottom: 10px;
     }
 
     .btn-blue { background-color: var(--blue-600); }
@@ -151,100 +94,38 @@
     .btn-red { background-color: var(--red-600); }
     .btn-gray { background-color: var(--gray-600); }
     
-    .btn-row {
-        display: flex;
-        gap: 10px;
-    }
+    .btn-row { display: flex; gap: 10px; }
 
     /* TABLAS GRID */
-    .list-container {
-        border: 1px solid var(--gray-100);
-        border-radius: 8px;
-        overflow: hidden;
-        margin-top: 15px;
-    }
-
-    .list-header {
-        background-color: var(--blue-800);
-        color: white;
-        font-weight: bold;
-        font-size: 12px;
-        padding: 12px 15px;
-        display: grid;
-    }
-
-    .list-item {
-        padding: 12px 15px;
-        border-bottom: 1px solid var(--gray-100);
-        display: grid;
-        align-items: center;
-        font-size: 14px;
-        cursor: pointer;
-        transition: 0.2s;
-    }
-
-    .list-item:hover {
-        background-color: var(--blue-50);
-    }
+    .list-container { border: 1px solid var(--gray-100); border-radius: 8px; overflow: hidden; margin-top: 15px; }
+    .list-header { background-color: var(--blue-800); color: white; font-weight: bold; font-size: 12px; padding: 12px 15px; display: grid; }
+    .list-item { padding: 12px 15px; border-bottom: 1px solid var(--gray-100); display: grid; align-items: center; font-size: 14px; cursor: pointer; transition: 0.2s; }
+    .list-item:hover { background-color: var(--blue-50); }
     
     .grid-events { grid-template-columns: 2fr 1fr; }
     .grid-sellers { grid-template-columns: 2fr 1fr 1fr; }
-    .grid-tickets { grid-template-columns: 60px 2fr 1fr 1fr 1.5fr; gap: 10px; }
+    .grid-tickets { grid-template-columns: 60px 2.5fr 1fr 1fr; gap: 10px; }
 
-    .badge {
-        padding: 5px 8px;
-        border-radius: 5px;
-        font-size: 11px;
-        font-weight: bold;
-    }
+    .badge { padding: 5px 8px; border-radius: 5px; font-size: 11px; font-weight: bold; text-align: center; display: inline-block; }
 
     .status-nopagado { background: #FCEBEB; color: var(--red-600); }
+    .status-parcial { background: #FFF4E5; color: var(--amber-600); }
     .status-pagado { background: #EAF3DE; color: var(--green-600); }
     .status-retirado { background: var(--blue-600); color: white; }
 
     /* MODALES */
-    .modal-overlay {
-        display: none;
-        position: fixed;
-        inset: 0;
-        background: rgba(0,0,0,0.6);
-        z-index: 1000;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .modal-overlay.open {
-        display: flex;
-    }
-
-    .modal {
-        background: white;
-        padding: 25px;
-        border-radius: 12px;
-        width: 90%;
-        max-width: 450px;
-        max-height: 90vh;
-        overflow-y: auto;
-    }
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 1000; align-items: center; justify-content: center; }
+    .modal-overlay.open { display: flex; }
+    .modal { background: white; padding: 25px; border-radius: 12px; width: 90%; max-width: 480px; max-height: 90vh; overflow-y: auto; }
     
-    /* LOGIN OVERLAY */
-    #login-overlay {
-        background: var(--blue-800);
-        z-index: 9999;
-    }
+    #login-overlay { background: var(--blue-800); z-index: 9999; }
     
-    /* PANTALLA MANTENIMIENTO */
     #pantalla-mantenimiento {
-        display: none;
-        position: fixed;
-        inset: 0;
-        background-color: rgba(250, 250, 250, 0.98);
-        z-index: 99999;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        text-align: center;
+        display: none; position: fixed; inset: 0; background-color: rgba(250, 250, 250, 0.98); z-index: 99999; flex-direction: column; justify-content: center; align-items: center; text-align: center;
     }
+    
+    /* Panel de Finanzas del Ticket */
+    .finance-box { background: var(--gray-50); padding: 15px; border-radius: 8px; border: 1px solid var(--gray-100); margin-bottom: 15px; font-size: 14px; }
   </style>
 </head>
 <body>
@@ -304,7 +185,7 @@
         <div class="list-container">
           <div class="list-header grid-events">
             <div>Tema / Nombre del Evento</div>
-            <div style="text-align: center;">Tickets Totales</div>
+            <div style="text-align: center;">Tickets (Precio)</div>
           </div>
           <div id="lista-eventos"></div>
         </div>
@@ -314,6 +195,7 @@
     <div id="view-evento-detalle" class="view-section">
       <div class="panel">
         <h2 id="lbl-evento-nombre" style="color: var(--blue-800);">Nombre del Evento</h2>
+        <p style="color: var(--gray-600); margin-bottom: 5px;">Precio por Ticket: <strong id="lbl-evento-precio" style="color: var(--green-600);">$0.00</strong></p>
         <p style="color: var(--gray-600); margin-bottom: 20px;">Total de tickets: <strong id="lbl-evento-total">0</strong></p>
 
         <div class="btn-row admin-only" style="margin-bottom: 20px; flex-wrap: wrap;">
@@ -343,17 +225,16 @@
           Tickets Asignados: <strong id="lbl-vendedor-asignados">0</strong> | Vendidos: <strong id="lbl-vendedor-vendidos">0</strong>
         </p>
 
-        <button class="btn btn-green" onclick="abrirModalCompra()">🎟️ Agregar Nueva Compra</button>
+        <button class="btn btn-green" onclick="abrirModalCompra()">🎟️ Registrar Nuevo Ticket</button>
 
         <h3 style="margin-top: 20px;">Listado de Tickets Registrados</h3>
         <div style="overflow-x: auto;">
             <div class="list-container" style="min-width: 600px;">
             <div class="list-header grid-tickets">
                 <div>N°</div>
-                <div>Nombre Completo</div>
+                <div>Nombre / Estado Financiero</div>
                 <div>Grado</div>
-                <div>Sección</div>
-                <div style="text-align: center;">Estado actual</div>
+                <div style="text-align: center;">Estado</div>
             </div>
             <div id="lista-tickets"></div>
             </div>
@@ -384,8 +265,10 @@
       <h3 style="color: var(--blue-800); margin-bottom: 15px;">Crear Evento</h3>
       <label>Tema del Evento</label>
       <input type="text" id="ev-tema">
-      <label>Tickets Totales</label>
-      <input type="number" id="ev-total">
+      <div class="btn-row">
+          <div style="flex: 1;"><label>Tickets Totales</label><input type="number" id="ev-total"></div>
+          <div style="flex: 1;"><label>Precio por Ticket ($)</label><input type="number" id="ev-precio" step="0.01"></div>
+      </div>
       <div class="btn-row">
         <button class="btn btn-gray" onclick="cerrarModal('modal-evento')">Cancelar</button>
         <button class="btn btn-blue" onclick="guardarEvento()">Guardar</button>
@@ -398,8 +281,10 @@
       <h3 style="color: var(--blue-800); margin-bottom: 15px;">✏️ Editar Evento</h3>
       <label>Tema del Evento</label>
       <input type="text" id="edit-ev-tema">
-      <label>Tickets Totales</label>
-      <input type="number" id="edit-ev-total">
+      <div class="btn-row">
+          <div style="flex: 1;"><label>Tickets Totales</label><input type="number" id="edit-ev-total"></div>
+          <div style="flex: 1;"><label>Precio por Ticket ($)</label><input type="number" id="edit-ev-precio" step="0.01"></div>
+      </div>
       <div class="btn-row">
         <button class="btn btn-gray" onclick="cerrarModal('modal-editar-evento')">Cancelar</button>
         <button class="btn btn-blue" onclick="guardarEdicionEvento()">Guardar Cambios</button>
@@ -431,14 +316,8 @@
       <label>Nombre del Comprador</label>
       <input type="text" id="tic-nombre">
       <div class="btn-row">
-        <div style="flex: 1;">
-          <label>Grado</label>
-          <input type="text" id="tic-grado">
-        </div>
-        <div style="flex: 1;">
-          <label>Sección</label>
-          <input type="text" id="tic-seccion">
-        </div>
+        <div style="flex: 1;"><label>Grado</label><input type="text" id="tic-grado"></div>
+        <div style="flex: 1;"><label>Sección</label><input type="text" id="tic-seccion"></div>
       </div>
       <div class="btn-row">
         <button class="btn btn-red" onclick="cerrarModal('modal-compra')">Cancelar</button>
@@ -453,7 +332,7 @@
       <p style="margin-bottom: 20px;">Has vendido todos los tickets que se te asignaron. Contacta al administrador si necesitas más.</p>
       <div class="btn-row">
         <button class="btn btn-gray" onclick="cerrarModal('modal-limite-tickets')">Aceptar y Salir</button>
-        <button class="btn btn-amber" style="background:var(--amber-600); color:white; border:none; padding:12px; border-radius:8px; font-weight:bold; width:100%; cursor:pointer;" onclick="solicitarMasTickets()">Solicitar más</button>
+        <button class="btn" style="background:var(--amber-600);" onclick="solicitarMasTickets()">Solicitar más</button>
       </div>
     </div>
   </div>
@@ -477,16 +356,29 @@
 
   <div class="modal-overlay" id="modal-estado">
     <div class="modal">
-      <h3 style="color: var(--blue-800); margin-bottom: 5px;">Estado del Ticket</h3>
+      <h3 style="color: var(--blue-800); margin-bottom: 5px;">Control de Pagos y Entrega</h3>
       <p id="lbl-estado-info" style="margin-bottom: 15px; font-weight: bold;"></p>
-      <select id="sel-estado">
-        <option value="No ha pagado">❌ No ha pagado</option>
-        <option value="Pagado">✅ Pagado</option>
-        <option value="Ya retiró su producto">📦 Ya retiró su producto</option>
-      </select>
+      
+      <div class="finance-box">
+          <p><strong>Precio del Ticket:</strong> $<span id="lbl-precio-tick"></span></p>
+          <p><strong>Total Abonado:</strong> $<span id="lbl-abonado" style="color: var(--green-600);"></span></p>
+          <p><strong>Falta por pagar:</strong> $<span id="lbl-deuda" style="color: var(--red-600);"></span></p>
+          <p style="font-size: 11px; color: var(--gray-600); margin-top: 5px;" id="lbl-fecha-ultimo-pago"></p>
+      </div>
+      
+      <label>Monto a abonar ahora ($)</label>
+      <div style="display:flex; gap:10px; margin-bottom: 15px;">
+          <input type="number" id="inp-abono" step="0.01" placeholder="Ej. 5.00" style="margin-bottom:0;">
+          <button class="btn btn-blue" style="width: auto; margin-bottom:0;" onclick="procesarAbono()">Abonar</button>
+      </div>
+
+      <div class="btn-row" style="margin-bottom: 10px;">
+          <button class="btn btn-green" onclick="procesarLiquidacion()">💰 Liquidar Todo</button>
+          <button class="btn" style="background:var(--blue-800);" onclick="marcarEntregado()">📦 Entregar Producto</button>
+      </div>
+      
       <div class="btn-row">
-        <button class="btn btn-gray" onclick="cerrarModal('modal-estado')">Cancelar</button>
-        <button class="btn btn-blue" onclick="actualizarEstado()">Actualizar</button>
+        <button class="btn btn-gray" onclick="cerrarModal('modal-estado')">Cerrar</button>
       </div>
     </div>
   </div>
@@ -639,7 +531,7 @@
         try {
             if(SCRIPT_URL === "AQUÍ_VA_TU_URL_DE_APPS_SCRIPT") {
                 alert("⚠️ Funciona modo local. Falta conectar a Google Sheets.");
-                dbEventos = [{ id: 1, tema: "Evento de Prueba", total: 100 }];
+                dbEventos = [{ id: 1, tema: "Evento de Prueba", total: 100, precio: 10.00 }];
                 dbVendedores = [];
                 dbTickets = [];
             } else {
@@ -735,19 +627,23 @@
             const ev = dbEventos.find(e => e.id === t.eventoId);
             const vend = dbVendedores.find(v => v.id === t.vendedorId);
             let btnEdit = isAdmin ? `<button class="badge bg-blue" style="border:none; cursor:pointer;" onclick="abrirModalEditarDesdeBusqueda(${t.id})">✏️ Editar/Borrar</button>` : '';
+            
+            let pagado = parseFloat(t.pagado) || 0;
+            let precio = ev ? parseFloat(ev.precio) : 0;
 
             contenedor.innerHTML += `
                 <div class="list-item" style="display:flex; flex-direction:column; align-items:flex-start; gap:5px;">
                     <div style="width:100%; display:flex; justify-content:space-between; align-items:center;">
                         <strong style="color:var(--blue-800); font-size:15px;">#${t.numero} - ${t.nombre}</strong>
                         <div style="display:flex; gap:5px;">
-                            <button class="badge bg-green" style="border:none; cursor:pointer;" onclick="abrirEstadoDesdeBusqueda(${t.id})">🏷️ Estado</button>
+                            <button class="badge bg-green" style="border:none; cursor:pointer;" onclick="abrirEstadoDesdeBusqueda(${t.id})">💰 Pagos/Estado</button>
                             ${btnEdit}
                         </div>
                     </div>
                     <div style="font-size:12px; color:var(--gray-600);">
                         Evento: ${ev ? ev.tema : 'N/A'} | Vendedor: ${vend ? vend.nombre : 'N/A'} <br>
                         Grado/Sección: ${t.grado} "${t.seccion}" <br>
+                        Abonado: <strong style="color:var(--green-600)">$${pagado.toFixed(2)}</strong> de $${precio.toFixed(2)} <br>
                         Estado: <strong style="color: var(--amber-600);">${t.estado}</strong>
                     </div>
                 </div>
@@ -783,6 +679,7 @@
         }
         
         dbEventos.forEach(ev => {
+            let precioStr = parseFloat(ev.precio) || 0;
             let btnEditEvent = isAdmin ? `
                 <div style="display:flex; gap:5px;">
                     <button class="badge bg-blue" style="padding: 6px 12px; margin:0; width:auto; border-radius: 5px; border: none; cursor: pointer;" onclick="abrirModalEditarEvento(event, ${ev.id})">✏️ Editar</button>
@@ -796,7 +693,7 @@
                         <span>📅 ${ev.tema}</span>
                         ${btnEditEvent}
                     </div>
-                    <div style="text-align: center;">${ev.total}</div>
+                    <div style="text-align: center;">${ev.total} ($${precioStr.toFixed(2)})</div>
                 </div>`;
         });
     }
@@ -808,6 +705,7 @@
         
         document.getElementById('edit-ev-tema').value = ev.tema;
         document.getElementById('edit-ev-total').value = ev.total;
+        document.getElementById('edit-ev-precio').value = ev.precio;
         
         abrirModal('modal-editar-evento');
     }
@@ -815,8 +713,8 @@
     async function guardarEdicionEvento() {
         const tema = document.getElementById('edit-ev-tema').value;
         const total = parseInt(document.getElementById('edit-ev-total').value);
+        const precio = parseFloat(document.getElementById('edit-ev-precio').value) || 0;
         
-        // Validación de tickets asignados
         const vends = dbVendedores.filter(v => v.eventoId === currentEventoId);
         const asignadosTotales = vends.reduce((acc, curr) => acc + parseInt(curr.asignados), 0);
         
@@ -827,12 +725,13 @@
         const ev = dbEventos.find(x => x.id === currentEventoId);
         ev.tema = tema; 
         ev.total = total;
+        ev.precio = precio;
         
         if(SCRIPT_URL !== "AQUÍ_VA_TU_URL_DE_APPS_SCRIPT") {
             await fetch(SCRIPT_URL, { 
                 method: 'POST', 
                 mode: 'no-cors', 
-                body: JSON.stringify({ tipo_post: "editar_evento", id: currentEventoId, tema: tema, total: total }) 
+                body: JSON.stringify({ tipo_post: "editar_evento", id: currentEventoId, tema: tema, total: total, precio: precio }) 
             });
         }
         
@@ -843,9 +742,11 @@
     async function guardarEvento() {
         const tema = document.getElementById('ev-tema').value;
         const total = document.getElementById('ev-total').value;
-        if(!tema || !total) return alert("Faltan datos.");
+        const precio = parseFloat(document.getElementById('ev-precio').value) || 0;
 
-        const nuevo = { id: Date.now(), tema, total: parseInt(total) };
+        if(!tema || !total || !precio) return alert("Completa el tema, el total de tickets y su precio.");
+
+        const nuevo = { id: Date.now(), tema, total: parseInt(total), precio: precio };
         
         if(SCRIPT_URL !== "AQUÍ_VA_TU_URL_DE_APPS_SCRIPT") {
             await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ tipo_post: "crear_evento", ...nuevo }) });
@@ -883,6 +784,9 @@
         
         document.getElementById('lbl-evento-nombre').innerText = ev.tema;
         document.getElementById('lbl-evento-total').innerText = ev.total;
+        
+        let precioStr = parseFloat(ev.precio) || 0;
+        document.getElementById('lbl-evento-precio').innerText = `$${precioStr.toFixed(2)}`;
 
         const contenedor = document.getElementById('lista-vendedores');
         contenedor.innerHTML = '';
@@ -960,6 +864,8 @@
     function renderVendedorDetalle() {
         const v = dbVendedores.find(v => v.id === currentVendedorId);
         const ticks = dbTickets.filter(t => t.vendedorId === currentVendedorId);
+        const ev = dbEventos.find(e => e.id === currentEventoId);
+        let precioTicket = parseFloat(ev.precio) || 0;
 
         document.getElementById('lbl-vendedor-nombre').innerText = v.nombre;
         document.getElementById('lbl-vendedor-asignados').innerText = v.asignados;
@@ -976,8 +882,16 @@
         ticks.sort((a,b) => parseInt(a.numero) - parseInt(b.numero));
 
         ticks.forEach(t => {
-            let cls = t.estado === 'Pagado' ? 'status-pagado' : (t.estado === 'Ya retiró su producto' ? 'status-retirado' : 'status-nopagado');
+            let pagado = parseFloat(t.pagado) || 0;
+            let deuda = precioTicket - pagado;
             
+            // Clase de estado para el badge
+            let cls = 'status-nopagado';
+            if (t.estado === 'Ya retiró su producto') cls = 'status-retirado';
+            else if (pagado >= precioTicket) cls = 'status-pagado';
+            else if (pagado > 0) cls = 'status-parcial';
+
+            // Estilos de retiro
             let rowStyle = '';
             let nameStyle = '';
             if (t.estado === 'Ya retiró su producto') {
@@ -986,13 +900,17 @@
             }
 
             let icon = editMode ? "✏️ " : "";
+            let infoFinanciera = `Abonado: <span style="color:var(--green-600);">$${pagado.toFixed(2)}</span> | Debe: <span style="color:var(--red-600);">$${deuda.toFixed(2)}</span>`;
 
             contenedor.innerHTML += `
                 <div class="list-item grid-tickets" style="${rowStyle}" onclick="clickEnTicket(${t.id})">
-                    <div style="font-weight:bold; color:var(--blue-800);">#${t.numero}</div>
-                    <div style="${nameStyle}">${icon}${t.nombre}</div>
+                    <div style="font-weight:bold; color:var(--blue-800); font-size:16px;">#${t.numero}</div>
+                    <div>
+                        <div style="font-weight:bold; ${nameStyle}">${icon}${t.nombre}</div>
+                        <div style="font-size:11px; color:#555;">${infoFinanciera}</div>
+                        <div style="font-size:10px; color:#999;">Registrado: ${t.fechaVenta || 'N/A'}</div>
+                    </div>
                     <div style="${nameStyle}">${t.grado}</div>
-                    <div style="${nameStyle}">${t.seccion}</div>
                     <div style="text-align: center;"><span class="badge ${cls}">${t.estado}</span></div>
                 </div>`;
         });
@@ -1034,7 +952,21 @@
 
         if(!nombre || !grado || !seccion) return alert("Completa los datos.");
 
-        const nuevo = { id: Date.now(), eventoId: currentEventoId, vendedorId: currentVendedorId, numero: parseInt(numero), nombre, grado, seccion, estado: "No ha pagado" };
+        const ahora = new Date().toLocaleString('es-ES'); // Fecha y hora local
+
+        const nuevo = { 
+            id: Date.now(), 
+            eventoId: currentEventoId, 
+            vendedorId: currentVendedorId, 
+            numero: parseInt(numero), 
+            nombre, 
+            grado, 
+            seccion, 
+            estado: "No ha pagado",
+            pagado: 0,
+            fechaVenta: ahora,
+            fechaPago: ""
+        };
 
         if(SCRIPT_URL !== "AQUÍ_VA_TU_URL_DE_APPS_SCRIPT") {
             await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ tipo_post: "registrar_ticket", ...nuevo }) });
@@ -1134,30 +1066,83 @@
         }
     }
 
+    // 7. FINANZAS Y ESTADOS DEL TICKET
     function abrirEstadoTicket(id) {
         currentTicketId = id;
         const t = dbTickets.find(x => x.id === id);
+        const ev = dbEventos.find(e => e.id === t.eventoId);
+        
+        let precio = parseFloat(ev.precio) || 0;
+        let pagado = parseFloat(t.pagado) || 0;
+        let deuda = precio - pagado;
+
         document.getElementById('lbl-estado-info').innerText = `Ticket #${t.numero} - ${t.nombre}`;
-        document.getElementById('sel-estado').value = t.estado;
+        document.getElementById('lbl-precio-tick').innerText = precio.toFixed(2);
+        document.getElementById('lbl-abonado').innerText = pagado.toFixed(2);
+        document.getElementById('lbl-deuda').innerText = deuda.toFixed(2);
+        
+        if(t.fechaPago) {
+            document.getElementById('lbl-fecha-ultimo-pago').innerText = `Último pago el: ${t.fechaPago}`;
+        } else {
+            document.getElementById('lbl-fecha-ultimo-pago').innerText = `No se han registrado pagos.`;
+        }
+
+        document.getElementById('inp-abono').value = '';
         abrirModal('modal-estado');
     }
 
-    async function actualizarEstado() {
-        const est = document.getElementById('sel-estado').value;
+    async function procesarAbono() {
+        let abono = parseFloat(document.getElementById('inp-abono').value);
+        if(!abono || abono <= 0) return alert("Ingrese un monto válido a abonar.");
+
         const t = dbTickets.find(x => x.id === currentTicketId);
-        t.estado = est;
+        const ev = dbEventos.find(e => e.id === t.eventoId);
+        let precio = parseFloat(ev.precio) || 0;
+        let pagadoTotal = (parseFloat(t.pagado) || 0) + abono;
+
+        if (pagadoTotal > precio) {
+            return alert(`❌ El abono supera el costo del ticket. El cliente solo debe $${(precio - (parseFloat(t.pagado) || 0)).toFixed(2)}`);
+        }
+
+        ejecutarActualizacionFinanciera(t, pagadoTotal, precio);
+    }
+
+    async function procesarLiquidacion() {
+        const t = dbTickets.find(x => x.id === currentTicketId);
+        const ev = dbEventos.find(e => e.id === t.eventoId);
+        let precio = parseFloat(ev.precio) || 0;
+
+        if(confirm("¿Seguro que deseas liquidar toda la deuda de este ticket?")) {
+            ejecutarActualizacionFinanciera(t, precio, precio);
+        }
+    }
+
+    async function marcarEntregado() {
+        const t = dbTickets.find(x => x.id === currentTicketId);
+        t.estado = "Ya retiró su producto";
+        
+        if(SCRIPT_URL !== "AQUÍ_VA_TU_URL_DE_APPS_SCRIPT") {
+            await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ tipo_post: "actualizar_estado", id: t.id, estado: t.estado, pagado: t.pagado, fechaPago: t.fechaPago }) });
+        }
+        
+        cerrarModal('modal-estado'); 
+        if (currentVendedorId !== null) renderVendedorDetalle(); else ejecutarBusqueda();
+    }
+
+    async function ejecutarActualizacionFinanciera(ticket, pagadoTotal, precio) {
+        ticket.pagado = pagadoTotal;
+        ticket.fechaPago = new Date().toLocaleString('es-ES');
+
+        if (pagadoTotal === 0) ticket.estado = "No ha pagado";
+        else if (pagadoTotal >= precio) ticket.estado = "Pagado";
+        else ticket.estado = "Abono Parcial";
 
         if(SCRIPT_URL !== "AQUÍ_VA_TU_URL_DE_APPS_SCRIPT") {
-            await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ tipo_post: "actualizar_estado", id: t.id, estado: est }) });
+            await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ tipo_post: "actualizar_estado", id: ticket.id, estado: ticket.estado, pagado: ticket.pagado, fechaPago: ticket.fechaPago }) });
         }
 
         cerrarModal('modal-estado'); 
-        
-        if (currentVendedorId !== null) {
-            renderVendedorDetalle();
-        } else {
-            ejecutarBusqueda();
-        }
+        if (currentVendedorId !== null) renderVendedorDetalle(); else ejecutarBusqueda();
     }
 
     // 8. RESUMEN
@@ -1165,22 +1150,32 @@
         const ev = dbEventos.find(e => e.id === currentEventoId);
         const vends = dbVendedores.filter(v => v.eventoId === currentEventoId);
         let totalVen = 0;
-        let html = `<strong>Evento:</strong> ${ev.tema}<br><strong>Tickets Totales:</strong> ${ev.total}<hr>`;
+        let totalRecaudado = 0;
+        let html = `<strong>Evento:</strong> ${ev.tema}<br><strong>Tickets Totales:</strong> ${ev.total} ($${ev.precio.toFixed(2)} c/u)<hr>`;
 
         vends.forEach(v => {
-            const ven = dbTickets.filter(t => t.vendedorId === v.id).length;
+            const ticksVend = dbTickets.filter(t => t.vendedorId === v.id);
+            const ven = ticksVend.length;
             totalVen += ven;
+            
+            let recaudadoVendedor = ticksVend.reduce((sum, t) => sum + (parseFloat(t.pagado) || 0), 0);
+            totalRecaudado += recaudadoVendedor;
+
             html += `<div style="background:var(--blue-50); padding:10px; border-radius:6px; margin-bottom:10px;">
                         <strong style="color:var(--blue-800);">${v.nombre}</strong><br>
-                        Asignados: ${v.asignados} | Vendidos: <span style="color:var(--green-600);font-weight:bold;">${ven}</span> | Faltantes: <span style="color:var(--red-600);font-weight:bold;">${v.asignados - ven}</span>
+                        Asignados: ${v.asignados} | Vendidos: <span style="color:var(--green-600);font-weight:bold;">${ven}</span> | Faltantes: <span style="color:var(--red-600);font-weight:bold;">${v.asignados - ven}</span><br>
+                        Recaudado: <strong style="color:var(--green-600);">$${recaudadoVendedor.toFixed(2)}</strong>
                      </div>`;
         });
-        html += `<hr><div style="text-align:center; font-size:16px;"><strong>Ventas Totales:</strong> <span style="color:var(--green-600);">${totalVen} / ${ev.total}</span></div>`;
+        html += `<hr>
+                 <div style="text-align:center; font-size:16px;"><strong>Ventas Totales:</strong> <span style="color:var(--green-600);">${totalVen} / ${ev.total}</span></div>
+                 <div style="text-align:center; font-size:16px; margin-top:5px;"><strong>Dinero Recaudado Global:</strong> <span style="color:var(--blue-600);">$${totalRecaudado.toFixed(2)}</span></div>
+                `;
         document.getElementById('resumen-content').innerHTML = html;
         abrirModal('modal-resumen');
     }
 
-    // 9. PDF MODIFICADO PARA NO DEJAR HOJA BLANCA
+    // 9. PDF MODIFICADO
     function abrirModalPdf() {
         const vends = dbVendedores.filter(v => v.eventoId === currentEventoId);
         const sel = document.getElementById('sel-pdf-vendedor');
@@ -1200,51 +1195,78 @@
 
         arr.sort((a, b) => parseInt(a.numero) - parseInt(b.numero));
 
-        // En lugar de renderizarlo invisible en el body, pasamos el HTML como string directamente a html2pdf
-        let html = `<div style="padding: 40px; font-family: Arial, sans-serif; color: #333; background: white; width: 800px;">
+        let precioTick = parseFloat(ev.precio) || 0;
+
+        let html = `<div style="padding: 30px; font-family: Arial, sans-serif; color: #333; background: white; width: 800px;">
             <div style="text-align:center; margin-bottom: 15px;">
                <img src="logo3.jpg" onerror="this.style.display='none';" style="width:70px;">
             </div>
-            <h1 style="color:#0C447C;text-align:center; margin-bottom:10px;">Reporte de Ventas</h1>
+            <h1 style="color:#0C447C;text-align:center; margin-bottom:10px;">Reporte Financiero y de Ventas</h1>
             <h2 style="text-align:center; margin-bottom:5px;">Evento: ${ev.tema}</h2>
             <h3 style="text-align:center;color:#555; margin-bottom:20px;">Vendedor: ${nomV}</h3>
             <table style="width:100%; border-collapse:collapse; font-size:12px; margin-top:20px;">
             <tr style="background:#0C447C; color:white;">
                 <th style="padding:8px; border:1px solid #ddd;">N° Ticket</th>
                 <th style="padding:8px; border:1px solid #ddd;">Nombre</th>
-                <th style="padding:8px; border:1px solid #ddd;">Grado/Secc</th>
                 <th style="padding:8px; border:1px solid #ddd;">Estado</th>
+                <th style="padding:8px; border:1px solid #ddd;">Abonado</th>
+                <th style="padding:8px; border:1px solid #ddd;">Deuda</th>
             </tr>`;
         
+        let sumaAbonos = 0;
+        let sumaDeudas = 0;
+
         if(arr.length === 0) {
-            html += `<tr><td colspan="4" style="text-align:center; padding:15px; font-weight:bold;">Ningún ticket registrado</td></tr>`;
+            html += `<tr><td colspan="5" style="text-align:center; padding:15px; font-weight:bold;">Ningún ticket registrado</td></tr>`;
         } else {
             arr.forEach(t => {
+                let pagado = parseFloat(t.pagado) || 0;
+                let deuda = precioTick - pagado;
+                
+                sumaAbonos += pagado;
+                sumaDeudas += deuda;
+
                 html += `<tr>
                     <td style="border:1px solid #ddd; text-align:center; padding:8px; font-weight:bold;">${t.numero}</td>
-                    <td style="border:1px solid #ddd; padding:8px;">${t.nombre}</td>
-                    <td style="border:1px solid #ddd; text-align:center; padding:8px;">${t.grado} "${t.seccion}"</td>
+                    <td style="border:1px solid #ddd; padding:8px;">${t.nombre} <br><span style="font-size:10px; color:#888;">${t.fechaVenta}</span></td>
                     <td style="border:1px solid #ddd; text-align:center; padding:8px;">${t.estado}</td>
+                    <td style="border:1px solid #ddd; text-align:center; padding:8px; color:green; font-weight:bold;">$${pagado.toFixed(2)}</td>
+                    <td style="border:1px solid #ddd; text-align:center; padding:8px; color:red; font-weight:bold;">$${deuda.toFixed(2)}</td>
                 </tr>`;
             });
         }
+        
+        // Fila de totales
+        html += `<tr style="background:#f9f9f9; font-weight:bold; font-size:14px;">
+                    <td colspan="3" style="text-align:right; padding:10px; border:1px solid #ddd;">TOTALES:</td>
+                    <td style="text-align:center; padding:10px; border:1px solid #ddd; color:green;">$${sumaAbonos.toFixed(2)}</td>
+                    <td style="text-align:center; padding:10px; border:1px solid #ddd; color:red;">$${sumaDeudas.toFixed(2)}</td>
+                 </tr>`;
+
         html += `</table></div>`;
+
+        const container = document.createElement('div');
+        container.innerHTML = html;
+        container.style.position = 'fixed';
+        container.style.top = '200vh'; 
+        container.style.left = '0';
+        document.body.appendChild(container);
 
         try {
             const opt = {
                 margin: 10,
-                filename: `Reporte_${nomV.replace(/ /g,'_')}.pdf`,
+                filename: `Reporte_Financiero_${nomV.replace(/ /g,'_')}.pdf`,
                 image: { type: 'jpeg', quality: 0.98 },
                 html2canvas: { scale: 2, useCORS: true, logging: false },
                 jsPDF: { unit: 'mm', format: 'letter', orientation: 'portrait' }
             };
 
-            // Renderiza enviando el String de HTML en lugar de un elemento oculto. Esto evita la página en blanco.
-            await html2pdf().set(opt).from(html).save();
+            await html2pdf().set(opt).from(container).save();
         } catch (error) {
             console.error("Error al generar PDF: ", error);
             alert("❌ Hubo un error al generar el archivo PDF.");
         } finally {
+            document.body.removeChild(container);
             document.getElementById('btn-generar-pdf').disabled = false;
             document.getElementById('lbl-pdf-status').style.display = 'none';
             cerrarModal('modal-pdf');
