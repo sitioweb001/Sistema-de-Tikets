@@ -8,69 +8,243 @@
 
   <style>
     :root {
-        --blue-800: #0C447C; --blue-600: #185FA5; --blue-50: #E6F1FB;
-        --green-600: #1D9E75; --red-600: #B71C1C; --gray-900: #2C2C2A;
-        --gray-600: #5F5E5A; --gray-100: #D3D1C7; --gray-50: #F0F2F5;
+        --blue-800: #0C447C;
+        --blue-600: #185FA5;
+        --blue-50: #E6F1FB;
+        --green-600: #1D9E75;
+        --red-600: #B71C1C;
+        --gray-900: #2C2C2A;
+        --gray-600: #5F5E5A;
+        --gray-100: #D3D1C7;
+        --gray-50: #F0F2F5;
         --amber-600: #BA7517;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, sans-serif; }
-    body { background-color: var(--gray-50); color: var(--gray-900); padding-bottom: 50px; overflow-x: hidden; }
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: 'Segoe UI', Tahoma, sans-serif;
+    }
+
+    body {
+        background-color: var(--gray-50);
+        color: var(--gray-900);
+        padding-bottom: 50px;
+        overflow-x: hidden;
+    }
 
     /* HEADER Y LOGOS */
-    .header { background-color: var(--blue-800); color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-    .header h1 { font-size: 20px; margin: 0;}
-    .header-logo { width: 45px; height: 45px; border-radius: 50%; object-fit: contain; background: white; padding: 3px; margin-right: 10px; cursor: pointer; }
-    
-    .web-logo-container { text-align: center; margin-bottom: 10px; }
-    .web-logo { width: 180px; height: auto; display: inline-block; cursor: pointer; }
+    .header {
+        background-color: var(--blue-800);
+        color: white;
+        padding: 15px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
 
-    .btn-back { background: var(--amber-600); color: white; border: none; padding: 8px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 13px;}
+    .header h1 {
+        font-size: 20px;
+        margin: 0;
+    }
 
-    .container { max-width: 900px; margin: 20px auto; padding: 0 20px; }
-    .panel { background: white; border-radius: 10px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+    .header-logo {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        object-fit: contain;
+        background: white;
+        padding: 3px;
+        margin-right: 10px;
+        cursor: pointer;
+    }
     
-    .view-section { display: none; }
-    .view-active { display: block; }
+    .web-logo-container {
+        text-align: center;
+        margin-bottom: 10px;
+    }
+
+    .web-logo {
+        width: 180px;
+        height: auto;
+        display: inline-block;
+        cursor: pointer;
+    }
+
+    .btn-back {
+        background: var(--amber-600);
+        color: white;
+        border: none;
+        padding: 8px 12px;
+        border-radius: 6px;
+        font-weight: bold;
+        cursor: pointer;
+        font-size: 13px;
+    }
+
+    .container {
+        max-width: 900px;
+        margin: 20px auto;
+        padding: 0 20px;
+    }
+
+    .panel {
+        background: white;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    
+    .view-section {
+        display: none;
+    }
+
+    .view-active {
+        display: block;
+    }
 
     /* INPUTS & BUTTONS */
-    label { font-weight: bold; font-size: 12px; color: var(--gray-600); display: block; margin-bottom: 5px; text-transform: uppercase; }
-    input[type="text"], input[type="password"], input[type="number"], select { width: 100%; padding: 10px; margin-bottom: 15px; border: 1.5px solid var(--gray-100); border-radius: 8px; font-size: 14px; outline: none; }
-    input[readonly] { background-color: #e9ecef; color: var(--blue-800); font-weight: bold; cursor: not-allowed; }
+    label {
+        font-weight: bold;
+        font-size: 12px;
+        color: var(--gray-600);
+        display: block;
+        margin-bottom: 5px;
+        text-transform: uppercase;
+    }
+
+    input[type="text"], input[type="password"], input[type="number"], select {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1.5px solid var(--gray-100);
+        border-radius: 8px;
+        font-size: 14px;
+        outline: none;
+    }
+
+    input[readonly] {
+        background-color: #e9ecef;
+        color: var(--blue-800);
+        font-weight: bold;
+        cursor: not-allowed;
+    }
     
-    .btn { padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; border: none; color: white; text-align: center; width: 100%; font-size: 14px; margin-bottom: 10px; }
+    .btn {
+        padding: 12px;
+        border-radius: 8px;
+        font-weight: bold;
+        cursor: pointer;
+        border: none;
+        color: white;
+        text-align: center;
+        width: 100%;
+        font-size: 14px;
+        margin-bottom: 10px;
+    }
+
     .btn-blue { background-color: var(--blue-600); }
     .btn-green { background-color: var(--green-600); }
     .btn-red { background-color: var(--red-600); }
     .btn-gray { background-color: var(--gray-600); }
-    .btn-row { display: flex; gap: 10px; }
+    
+    .btn-row {
+        display: flex;
+        gap: 10px;
+    }
 
     /* TABLAS GRID */
-    .list-container { border: 1px solid var(--gray-100); border-radius: 8px; overflow: hidden; margin-top: 15px; }
-    .list-header { background-color: var(--blue-800); color: white; font-weight: bold; font-size: 12px; padding: 12px 15px; display: grid; }
-    .list-item { padding: 12px 15px; border-bottom: 1px solid var(--gray-100); display: grid; align-items: center; font-size: 14px; cursor: pointer; transition: 0.2s; }
-    .list-item:hover { background-color: var(--blue-50); }
+    .list-container {
+        border: 1px solid var(--gray-100);
+        border-radius: 8px;
+        overflow: hidden;
+        margin-top: 15px;
+    }
+
+    .list-header {
+        background-color: var(--blue-800);
+        color: white;
+        font-weight: bold;
+        font-size: 12px;
+        padding: 12px 15px;
+        display: grid;
+    }
+
+    .list-item {
+        padding: 12px 15px;
+        border-bottom: 1px solid var(--gray-100);
+        display: grid;
+        align-items: center;
+        font-size: 14px;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    .list-item:hover {
+        background-color: var(--blue-50);
+    }
     
     .grid-events { grid-template-columns: 2fr 1fr; }
     .grid-sellers { grid-template-columns: 2fr 1fr 1fr; }
-    .grid-tickets { grid-template-columns: 60px 2fr 1fr 1fr 1.5fr; gap: 10px;}
+    .grid-tickets { grid-template-columns: 60px 2fr 1fr 1fr 1.5fr; gap: 10px; }
 
-    .badge { padding: 5px 8px; border-radius: 5px; font-size: 11px; font-weight: bold; }
+    .badge {
+        padding: 5px 8px;
+        border-radius: 5px;
+        font-size: 11px;
+        font-weight: bold;
+    }
+
     .status-nopagado { background: #FCEBEB; color: var(--red-600); }
     .status-pagado { background: #EAF3DE; color: var(--green-600); }
     .status-retirado { background: var(--blue-600); color: white; }
 
     /* MODALES */
-    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 1000; align-items: center; justify-content: center; }
-    .modal-overlay.open { display: flex; }
-    .modal { background: white; padding: 25px; border-radius: 12px; width: 90%; max-width: 450px; max-height: 90vh; overflow-y: auto; }
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.6);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-overlay.open {
+        display: flex;
+    }
+
+    .modal {
+        background: white;
+        padding: 25px;
+        border-radius: 12px;
+        width: 90%;
+        max-width: 450px;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
     
     /* LOGIN OVERLAY */
-    #login-overlay { background: var(--blue-800); z-index: 9999; }
+    #login-overlay {
+        background: var(--blue-800);
+        z-index: 9999;
+    }
     
     /* PANTALLA MANTENIMIENTO */
-    #pantalla-mantenimiento { display: none; position: fixed; inset: 0; background-color: rgba(250, 250, 250, 0.98); z-index: 99999; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
-
+    #pantalla-mantenimiento {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background-color: rgba(250, 250, 250, 0.98);
+        z-index: 99999;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+    }
   </style>
 </head>
 <body>
@@ -208,9 +382,28 @@
   <div class="modal-overlay" id="modal-evento">
     <div class="modal">
       <h3 style="color: var(--blue-800); margin-bottom: 15px;">Crear Evento</h3>
-      <label>Tema del Evento</label><input type="text" id="ev-tema">
-      <label>Tickets Totales</label><input type="number" id="ev-total">
-      <div class="btn-row"><button class="btn btn-gray" onclick="cerrarModal('modal-evento')">Cancelar</button><button class="btn btn-blue" onclick="guardarEvento()">Guardar</button></div>
+      <label>Tema del Evento</label>
+      <input type="text" id="ev-tema">
+      <label>Tickets Totales</label>
+      <input type="number" id="ev-total">
+      <div class="btn-row">
+        <button class="btn btn-gray" onclick="cerrarModal('modal-evento')">Cancelar</button>
+        <button class="btn btn-blue" onclick="guardarEvento()">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modal-editar-evento">
+    <div class="modal">
+      <h3 style="color: var(--blue-800); margin-bottom: 15px;">✏️ Editar Evento</h3>
+      <label>Tema del Evento</label>
+      <input type="text" id="edit-ev-tema">
+      <label>Tickets Totales</label>
+      <input type="number" id="edit-ev-total">
+      <div class="btn-row">
+        <button class="btn btn-gray" onclick="cerrarModal('modal-editar-evento')">Cancelar</button>
+        <button class="btn btn-blue" onclick="guardarEdicionEvento()">Guardar Cambios</button>
+      </div>
     </div>
   </div>
 
@@ -219,22 +412,38 @@
       <h3 style="color: var(--blue-800); margin-bottom: 5px;">Asignar Vendedor</h3>
       <p id="lbl-disponibles-evento" style="font-size: 13px; color: var(--amber-600); margin-bottom: 15px; font-weight:bold;"></p>
       
-      <label>Nombre del Vendedor</label><input type="text" id="vend-nombre">
-      <label>Tickets Asignados</label><input type="number" id="vend-cantidad">
-      <div class="btn-row"><button class="btn btn-gray" onclick="cerrarModal('modal-vendedor')">Cancelar</button><button class="btn btn-blue" onclick="guardarVendedor()">Asignar</button></div>
+      <label>Nombre del Vendedor</label>
+      <input type="text" id="vend-nombre">
+      <label>Tickets Asignados</label>
+      <input type="number" id="vend-cantidad">
+      <div class="btn-row">
+        <button class="btn btn-gray" onclick="cerrarModal('modal-vendedor')">Cancelar</button>
+        <button class="btn btn-blue" onclick="guardarVendedor()">Asignar</button>
+      </div>
     </div>
   </div>
 
   <div class="modal-overlay" id="modal-compra">
     <div class="modal">
       <h3 style="color: var(--blue-800); margin-bottom: 15px;">Registrar Ticket</h3>
-      <label>N° Ticket (Automático)</label><input type="text" id="tic-num" readonly>
-      <label>Nombre del Comprador</label><input type="text" id="tic-nombre">
+      <label>N° Ticket (Automático)</label>
+      <input type="text" id="tic-num" readonly>
+      <label>Nombre del Comprador</label>
+      <input type="text" id="tic-nombre">
       <div class="btn-row">
-        <div style="flex: 1;"><label>Grado</label><input type="text" id="tic-grado"></div>
-        <div style="flex: 1;"><label>Sección</label><input type="text" id="tic-seccion"></div>
+        <div style="flex: 1;">
+          <label>Grado</label>
+          <input type="text" id="tic-grado">
+        </div>
+        <div style="flex: 1;">
+          <label>Sección</label>
+          <input type="text" id="tic-seccion">
+        </div>
       </div>
-      <div class="btn-row"><button class="btn btn-red" onclick="cerrarModal('modal-compra')">Cancelar</button><button class="btn btn-green" onclick="guardarCompra()">Guardar Ticket</button></div>
+      <div class="btn-row">
+        <button class="btn btn-red" onclick="cerrarModal('modal-compra')">Cancelar</button>
+        <button class="btn btn-green" onclick="guardarCompra()">Guardar Ticket</button>
+      </div>
     </div>
   </div>
 
@@ -275,18 +484,29 @@
         <option value="Pagado">✅ Pagado</option>
         <option value="Ya retiró su producto">📦 Ya retiró su producto</option>
       </select>
-      <div class="btn-row"><button class="btn btn-gray" onclick="cerrarModal('modal-estado')">Cancelar</button><button class="btn btn-blue" onclick="actualizarEstado()">Actualizar</button></div>
+      <div class="btn-row">
+        <button class="btn btn-gray" onclick="cerrarModal('modal-estado')">Cancelar</button>
+        <button class="btn btn-blue" onclick="actualizarEstado()">Actualizar</button>
+      </div>
     </div>
   </div>
 
   <div class="modal-overlay" id="modal-editar-ticket">
     <div class="modal">
       <h3 style="color: var(--blue-800); margin-bottom: 15px;">✏️ Editar / Eliminar Ticket</h3>
-      <label>N° Ticket</label><input type="text" id="edit-tic-num" readonly>
-      <label>Nombre del Comprador</label><input type="text" id="edit-tic-nombre">
+      <label>N° Ticket</label>
+      <input type="text" id="edit-tic-num" readonly>
+      <label>Nombre del Comprador</label>
+      <input type="text" id="edit-tic-nombre">
       <div class="btn-row">
-        <div style="flex: 1;"><label>Grado</label><input type="text" id="edit-tic-grado"></div>
-        <div style="flex: 1;"><label>Sección</label><input type="text" id="edit-tic-seccion"></div>
+        <div style="flex: 1;">
+          <label>Grado</label>
+          <input type="text" id="edit-tic-grado">
+        </div>
+        <div style="flex: 1;">
+          <label>Sección</label>
+          <input type="text" id="edit-tic-seccion">
+        </div>
       </div>
       <div class="btn-row" style="margin-top: 15px;">
         <button class="btn btn-gray" onclick="cerrarModal('modal-editar-ticket')">Cancelar</button>
@@ -297,13 +517,18 @@
   </div>
 
   <div class="modal-overlay" id="modal-resumen">
-    <div class="modal" style="max-width: 500px;"><h3 style="color: var(--blue-800); margin-bottom: 15px;">📊 Resumen de Ventas</h3><div id="resumen-content" style="line-height: 1.6; font-size: 14px; margin-bottom: 20px;"></div><button class="btn btn-gray" onclick="cerrarModal('modal-resumen')">Cerrar</button></div>
+    <div class="modal" style="max-width: 500px;">
+      <h3 style="color: var(--blue-800); margin-bottom: 15px;">📊 Resumen de Ventas</h3>
+      <div id="resumen-content" style="line-height: 1.6; font-size: 14px; margin-bottom: 20px;"></div>
+      <button class="btn btn-gray" onclick="cerrarModal('modal-resumen')">Cerrar</button>
+    </div>
   </div>
 
   <div class="modal-overlay" id="modal-pdf">
     <div class="modal">
       <h3 style="color: var(--blue-800); margin-bottom: 15px;">Generar PDF</h3>
-      <label>Seleccione Vendedor</label><select id="sel-pdf-vendedor"></select>
+      <label>Seleccione Vendedor</label>
+      <select id="sel-pdf-vendedor"></select>
       <p id="lbl-pdf-status" style="color: var(--blue-600); font-weight: bold; margin-bottom: 10px; display: none;">⏳ Generando y descargando PDF...</p>
       <div class="btn-row">
         <button class="btn btn-gray" onclick="cerrarModal('modal-pdf')">Cancelar</button>
@@ -318,14 +543,20 @@
     // ==========================================
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyt95UkpLvkUZEnA3NTSDhL1OULcg5MiGG7kklF8TnE71owY5bMjqFXIeJRaVN00H5APQ/exec"; 
 
-    let dbEventos = [], dbVendedores = [], dbTickets = [];
-    let currentEventoId = null, currentVendedorId = null, currentTicketId = null;
+    let dbEventos = [];
+    let dbVendedores = [];
+    let dbTickets = [];
+    
+    let currentEventoId = null;
+    let currentVendedorId = null;
+    let currentTicketId = null;
+    
     let isAdmin = false;
     let editMode = false;
 
     // VERIFICAR MANTENIMIENTO AL CARGAR LA PÁGINA
     window.onload = async () => {
-        if(SCRIPT_URL !== "TU_URL_AQUI") {
+        if(SCRIPT_URL !== "AQUÍ_VA_TU_URL_DE_APPS_SCRIPT") {
             try {
                 const res = await fetch(SCRIPT_URL + "?tipo=check_mantenimiento");
                 const data = await res.json();
@@ -333,23 +564,33 @@
                     document.getElementById("pantalla-mantenimiento").style.display = 'flex';
                     document.getElementById("login-overlay").classList.remove('open');
                 }
-            } catch (e) { console.log(e); }
+            } catch (e) {
+                console.log(e); 
+            }
         }
     };
 
     // FUNCION PARA ACTIVAR/DESACTIVAR EL APAGÓN (MANTENIMIENTO)
     async function toggleMantenimiento() {
         const password = prompt("ADVERTENCIA: ¿Deseas activar/desactivar el Apagón Global?\nIngresa clave maestra:");
-        if (password !== "747-8") return alert("❌ Clave incorrecta. Acceso Denegado.");
+        if (password !== "747-8") {
+            return alert("❌ Clave incorrecta. Acceso Denegado.");
+        }
         
         document.body.style.cursor = "wait";
         try {
-            if(SCRIPT_URL !== "TU_URL_AQUI") {
-                await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ tipo_post: "toggle_mantenimiento", password: password }) });
+            if(SCRIPT_URL !== "AQUÍ_VA_TU_URL_DE_APPS_SCRIPT") {
+                await fetch(SCRIPT_URL, { 
+                    method: 'POST', 
+                    mode: 'no-cors', 
+                    body: JSON.stringify({ tipo_post: "toggle_mantenimiento", password: password }) 
+                });
             }
             alert("📡 Orden enviada a la Nube."); 
             setTimeout(() => { location.reload(); }, 1500);
-        } catch (e) { alert("❌ Error de red."); }
+        } catch (e) { 
+            alert("❌ Error de red."); 
+        }
         document.body.style.cursor = "default";
     }
 
@@ -396,7 +637,7 @@
     async function cargarDatosDesdeNube() {
         showView('view-loading');
         try {
-            if(SCRIPT_URL === "TU_URL_AQUI") {
+            if(SCRIPT_URL === "AQUÍ_VA_TU_URL_DE_APPS_SCRIPT") {
                 alert("⚠️ Funciona modo local. Falta conectar a Google Sheets.");
                 dbEventos = [{ id: 1, tema: "Evento de Prueba", total: 100 }];
                 dbVendedores = [];
@@ -454,10 +695,12 @@
         }
     }
     
-    function cerrarModal(id) { document.getElementById(id).classList.remove('open'); }
+    function cerrarModal(id) { 
+        document.getElementById(id).classList.remove('open'); 
+    }
 
     // ==========================================
-    // BUSCADOR GLOBAL (Reforzado)
+    // BUSCADOR GLOBAL
     // ==========================================
     function abrirBuscador() {
         document.getElementById('txt-buscar').value = '';
@@ -474,7 +717,6 @@
             return;
         }
 
-        // Búsqueda a prueba de fallos (null, undefined)
         let filtrados = dbTickets.filter(t => {
             const nombreStr = (t.nombre || "").toLowerCase();
             const numStr = (t.numero || "").toString();
@@ -534,20 +776,68 @@
     function renderEventos() {
         const contenedor = document.getElementById('lista-eventos');
         contenedor.innerHTML = '';
-        if(dbEventos.length === 0) return contenedor.innerHTML = '<div style="padding:20px;text-align:center;">No hay eventos en la nube.</div>';
+        
+        if(dbEventos.length === 0) {
+            contenedor.innerHTML = '<div style="padding:20px;text-align:center;">No hay eventos en la nube.</div>';
+            return;
+        }
         
         dbEventos.forEach(ev => {
-            let btnEliminar = isAdmin ? `<button class="badge bg-red" style="padding: 6px 12px; margin:0; width:auto; border-radius: 5px; border: none; cursor: pointer;" onclick="eliminarEvento(event, ${ev.id})">🗑️ Borrar Evento</button>` : '';
+            let btnEditEvent = isAdmin ? `
+                <div style="display:flex; gap:5px;">
+                    <button class="badge bg-blue" style="padding: 6px 12px; margin:0; width:auto; border-radius: 5px; border: none; cursor: pointer;" onclick="abrirModalEditarEvento(event, ${ev.id})">✏️ Editar</button>
+                    <button class="badge bg-red" style="padding: 6px 12px; margin:0; width:auto; border-radius: 5px; border: none; cursor: pointer;" onclick="eliminarEvento(event, ${ev.id})">🗑️ Borrar</button>
+                </div>
+            ` : '';
 
             contenedor.innerHTML += `
                 <div class="list-item grid-events" onclick="abrirEvento(${ev.id})">
                     <div style="font-weight: bold; color: var(--blue-800); display: flex; align-items: center; justify-content: space-between;">
                         <span>📅 ${ev.tema}</span>
-                        ${btnEliminar}
+                        ${btnEditEvent}
                     </div>
                     <div style="text-align: center;">${ev.total}</div>
                 </div>`;
         });
+    }
+
+    function abrirModalEditarEvento(event, id) {
+        event.stopPropagation();
+        const ev = dbEventos.find(x => x.id === id);
+        currentEventoId = id;
+        
+        document.getElementById('edit-ev-tema').value = ev.tema;
+        document.getElementById('edit-ev-total').value = ev.total;
+        
+        abrirModal('modal-editar-evento');
+    }
+
+    async function guardarEdicionEvento() {
+        const tema = document.getElementById('edit-ev-tema').value;
+        const total = parseInt(document.getElementById('edit-ev-total').value);
+        
+        // Validación de tickets asignados
+        const vends = dbVendedores.filter(v => v.eventoId === currentEventoId);
+        const asignadosTotales = vends.reduce((acc, curr) => acc + parseInt(curr.asignados), 0);
+        
+        if(total < asignadosTotales) {
+            return alert(`❌ No puedes reducir los tickets a ${total}. Ya hay ${asignadosTotales} tickets asignados a los vendedores.`);
+        }
+        
+        const ev = dbEventos.find(x => x.id === currentEventoId);
+        ev.tema = tema; 
+        ev.total = total;
+        
+        if(SCRIPT_URL !== "AQUÍ_VA_TU_URL_DE_APPS_SCRIPT") {
+            await fetch(SCRIPT_URL, { 
+                method: 'POST', 
+                mode: 'no-cors', 
+                body: JSON.stringify({ tipo_post: "editar_evento", id: currentEventoId, tema: tema, total: total }) 
+            });
+        }
+        
+        cerrarModal('modal-editar-evento'); 
+        renderEventos();
     }
 
     async function guardarEvento() {
@@ -556,7 +846,10 @@
         if(!tema || !total) return alert("Faltan datos.");
 
         const nuevo = { id: Date.now(), tema, total: parseInt(total) };
-        if(SCRIPT_URL !== "TU_URL_AQUI") await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ tipo_post: "crear_evento", ...nuevo }) });
+        
+        if(SCRIPT_URL !== "AQUÍ_VA_TU_URL_DE_APPS_SCRIPT") {
+            await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ tipo_post: "crear_evento", ...nuevo }) });
+        }
         
         dbEventos.push(nuevo);
         cerrarModal('modal-evento'); 
@@ -564,11 +857,15 @@
     }
 
     async function eliminarEvento(event, id) {
-        event.stopPropagation(); // Evita abrir el evento
+        event.stopPropagation(); 
         if(!confirm("¿Seguro que deseas eliminar este evento por completo?")) return;
         
         dbEventos = dbEventos.filter(e => e.id !== id);
-        if(SCRIPT_URL !== "TU_URL_AQUI") await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ tipo_post: "eliminar_evento", id: id }) });
+        
+        if(SCRIPT_URL !== "AQUÍ_VA_TU_URL_DE_APPS_SCRIPT") {
+            await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ tipo_post: "eliminar_evento", id: id }) });
+        }
+        
         renderEventos();
     }
 
@@ -589,8 +886,12 @@
 
         const contenedor = document.getElementById('lista-vendedores');
         contenedor.innerHTML = '';
+        
         const vends = dbVendedores.filter(v => v.eventoId === currentEventoId);
-        if(vends.length === 0) return contenedor.innerHTML = '<div style="padding:20px;text-align:center;">No hay vendedores en este evento.</div>';
+        if(vends.length === 0) {
+            contenedor.innerHTML = '<div style="padding:20px;text-align:center;">No hay vendedores en este evento.</div>';
+            return;
+        }
 
         vends.forEach(v => {
             const vendidos = dbTickets.filter(t => t.vendedorId === v.id).length;
@@ -618,10 +919,14 @@
         }
 
         const nuevo = { id: Date.now(), eventoId: currentEventoId, nombre, asignados: parseInt(asignados) };
-        if(SCRIPT_URL !== "TU_URL_AQUI") await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ tipo_post: "crear_vendedor", ...nuevo }) });
+        
+        if(SCRIPT_URL !== "AQUÍ_VA_TU_URL_DE_APPS_SCRIPT") {
+            await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ tipo_post: "crear_vendedor", ...nuevo }) });
+        }
 
         dbVendedores.push(nuevo);
-        cerrarModal('modal-vendedor'); renderEventoDetalle();
+        cerrarModal('modal-vendedor'); 
+        renderEventoDetalle();
     }
 
     function abrirVendedor(id) {
@@ -645,8 +950,11 @@
     }
 
     function clickEnTicket(id) {
-        if(editMode) abrirModalEditarTicket(id);
-        else abrirEstadoTicket(id);
+        if(editMode) {
+            abrirModalEditarTicket(id);
+        } else {
+            abrirEstadoTicket(id);
+        }
     }
 
     function renderVendedorDetalle() {
@@ -660,14 +968,16 @@
         const contenedor = document.getElementById('lista-tickets');
         contenedor.innerHTML = '';
 
-        if(ticks.length === 0) return contenedor.innerHTML = '<div style="padding:20px; text-align:center;">No has vendido tickets aún.</div>';
+        if(ticks.length === 0) {
+            contenedor.innerHTML = '<div style="padding:20px; text-align:center;">No has vendido tickets aún.</div>';
+            return;
+        }
 
         ticks.sort((a,b) => parseInt(a.numero) - parseInt(b.numero));
 
         ticks.forEach(t => {
             let cls = t.estado === 'Pagado' ? 'status-pagado' : (t.estado === 'Ya retiró su producto' ? 'status-retirado' : 'status-nopagado');
             
-            // ESTILO VERDE Y TACHADO PARA RETIRADOS
             let rowStyle = '';
             let nameStyle = '';
             if (t.estado === 'Ya retiró su producto') {
@@ -688,7 +998,6 @@
         });
     }
 
-    // AGREGAR COMPRA - SISTEMA DE HUECOS NUMÉRICOS
     function abrirModalCompra() {
         const v = dbVendedores.find(v => v.id === currentVendedorId);
         const ticksVendidos = dbTickets.filter(t => t.vendedorId === currentVendedorId).length;
@@ -703,8 +1012,11 @@
         let proximoNumero = 1;
         
         for (let i = 0; i < numerosUsados.length; i++) {
-            if (numerosUsados[i] === proximoNumero) proximoNumero++;
-            else if (numerosUsados[i] > proximoNumero) break; 
+            if (numerosUsados[i] === proximoNumero) {
+                proximoNumero++;
+            } else if (numerosUsados[i] > proximoNumero) {
+                break; 
+            }
         }
         
         document.getElementById('tic-num').value = proximoNumero;
@@ -724,7 +1036,9 @@
 
         const nuevo = { id: Date.now(), eventoId: currentEventoId, vendedorId: currentVendedorId, numero: parseInt(numero), nombre, grado, seccion, estado: "No ha pagado" };
 
-        if(SCRIPT_URL !== "TU_URL_AQUI") await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ tipo_post: "registrar_ticket", ...nuevo }) });
+        if(SCRIPT_URL !== "AQUÍ_VA_TU_URL_DE_APPS_SCRIPT") {
+            await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ tipo_post: "registrar_ticket", ...nuevo }) });
+        }
 
         dbTickets.push(nuevo);
         cerrarModal('modal-compra'); 
@@ -764,7 +1078,9 @@
         const v = dbVendedores.find(vend => vend.id === currentVendedorId);
         v.asignados += extra; 
         
-        if(SCRIPT_URL !== "TU_URL_AQUI") await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ tipo_post: "aumentar_asignacion", id: v.id, nuevos_asignados: v.asignados }) });
+        if(SCRIPT_URL !== "AQUÍ_VA_TU_URL_DE_APPS_SCRIPT") {
+            await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ tipo_post: "aumentar_asignacion", id: v.id, nuevos_asignados: v.asignados }) });
+        }
         
         cerrarModal('modal-solicitar-mas');
         renderVendedorDetalle();
@@ -789,22 +1105,33 @@
         if(!nombre || !grado || !seccion) return alert("Completa los datos.");
 
         const t = dbTickets.find(x => x.id === currentTicketId);
-        t.nombre = nombre; t.grado = grado; t.seccion = seccion;
+        t.nombre = nombre; 
+        t.grado = grado; 
+        t.seccion = seccion;
 
-        if(SCRIPT_URL !== "TU_URL_AQUI") await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ tipo_post: "editar_ticket", id: t.id, nombre, grado, seccion }) });
+        if(SCRIPT_URL !== "AQUÍ_VA_TU_URL_DE_APPS_SCRIPT") {
+            await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ tipo_post: "editar_ticket", id: t.id, nombre, grado, seccion }) });
+        }
 
         cerrarModal('modal-editar-ticket'); 
-        if(currentVendedorId !== null) renderVendedorDetalle();
+        if(currentVendedorId !== null) {
+            renderVendedorDetalle();
+        }
     }
 
     async function eliminarTicket() {
         if(!confirm("¿Seguro que deseas ELIMINAR este ticket? El número quedará libre.")) return;
         
         dbTickets = dbTickets.filter(x => x.id !== currentTicketId);
-        if(SCRIPT_URL !== "TU_URL_AQUI") await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ tipo_post: "eliminar_ticket", id: currentTicketId }) });
+        
+        if(SCRIPT_URL !== "AQUÍ_VA_TU_URL_DE_APPS_SCRIPT") {
+            await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ tipo_post: "eliminar_ticket", id: currentTicketId }) });
+        }
 
         cerrarModal('modal-editar-ticket'); 
-        if(currentVendedorId !== null) renderVendedorDetalle();
+        if(currentVendedorId !== null) {
+            renderVendedorDetalle();
+        }
     }
 
     function abrirEstadoTicket(id) {
@@ -820,7 +1147,9 @@
         const t = dbTickets.find(x => x.id === currentTicketId);
         t.estado = est;
 
-        if(SCRIPT_URL !== "TU_URL_AQUI") await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ tipo_post: "actualizar_estado", id: t.id, estado: est }) });
+        if(SCRIPT_URL !== "AQUÍ_VA_TU_URL_DE_APPS_SCRIPT") {
+            await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ tipo_post: "actualizar_estado", id: t.id, estado: est }) });
+        }
 
         cerrarModal('modal-estado'); 
         
@@ -851,7 +1180,7 @@
         abrirModal('modal-resumen');
     }
 
-    // 9. PDF
+    // 9. PDF MODIFICADO PARA NO DEJAR HOJA BLANCA
     function abrirModalPdf() {
         const vends = dbVendedores.filter(v => v.eventoId === currentEventoId);
         const sel = document.getElementById('sel-pdf-vendedor');
@@ -871,7 +1200,8 @@
 
         arr.sort((a, b) => parseInt(a.numero) - parseInt(b.numero));
 
-        let html = `<div style="padding: 30px; font-family: Arial, sans-serif; color: #333; background: white; width: 800px;">
+        // En lugar de renderizarlo invisible en el body, pasamos el HTML como string directamente a html2pdf
+        let html = `<div style="padding: 40px; font-family: Arial, sans-serif; color: #333; background: white; width: 800px;">
             <div style="text-align:center; margin-bottom: 15px;">
                <img src="logo3.jpg" onerror="this.style.display='none';" style="width:70px;">
             </div>
@@ -900,13 +1230,6 @@
         }
         html += `</table></div>`;
 
-        const container = document.createElement('div');
-        container.innerHTML = html;
-        container.style.position = 'fixed';
-        container.style.top = '200vh'; 
-        container.style.left = '0';
-        document.body.appendChild(container);
-
         try {
             const opt = {
                 margin: 10,
@@ -916,12 +1239,12 @@
                 jsPDF: { unit: 'mm', format: 'letter', orientation: 'portrait' }
             };
 
-            await html2pdf().set(opt).from(container).save();
+            // Renderiza enviando el String de HTML en lugar de un elemento oculto. Esto evita la página en blanco.
+            await html2pdf().set(opt).from(html).save();
         } catch (error) {
             console.error("Error al generar PDF: ", error);
             alert("❌ Hubo un error al generar el archivo PDF.");
         } finally {
-            document.body.removeChild(container);
             document.getElementById('btn-generar-pdf').disabled = false;
             document.getElementById('lbl-pdf-status').style.display = 'none';
             cerrarModal('modal-pdf');
