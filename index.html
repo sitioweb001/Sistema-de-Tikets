@@ -109,6 +109,9 @@
     .grid-tickets { grid-template-columns: 60px 2.5fr 1fr 1fr; gap: 10px; }
 
     .badge { padding: 5px 8px; border-radius: 5px; font-size: 11px; font-weight: bold; text-align: center; display: inline-block; }
+    .bg-blue { background: var(--blue-600); color: white; }
+    .bg-green { background: var(--green-600); color: white; }
+    .bg-red { background: var(--red-600); color: white; }
 
     .status-nopagado { background: #FCEBEB; color: var(--red-600); }
     .status-parcial { background: #FFF4E5; color: var(--amber-600); }
@@ -141,6 +144,16 @@
     .qr-card-qr img { max-width: 100%; height: auto; }
     .qr-card-title { color: var(--blue-800); font-weight: bold; font-size: 14px; margin-bottom: 6px; }
     .qr-card-info { font-size: 12px; line-height: 1.4; color: var(--gray-600); }
+    .section-search { display: flex; gap: 10px; margin: 12px 0; }
+    .section-search input { margin-bottom: 0; }
+    .search-result-row { display: flex; flex-direction: column; align-items: flex-start; gap: 5px; }
+    .search-result-top { width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+    .search-result-actions { display: flex; gap: 5px; flex-wrap: wrap; justify-content: flex-end; }
+    .pdf-report { width: 960px; max-width: 960px; padding: 24px; font-family: Arial, sans-serif; color: #333; background: white; box-sizing: border-box; }
+    .pdf-report table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 11px; margin-top: 16px; }
+    .pdf-report th, .pdf-report td { border: 1px solid #ddd; padding: 7px; overflow-wrap: anywhere; word-break: break-word; }
+    .pdf-report th { background: #0C447C; color: white; }
+    .pdf-report tr { page-break-inside: avoid; break-inside: avoid; }
     .hidden { display: none !important; }
   </style>
 </head>
@@ -223,6 +236,10 @@
           <button class="btn btn-gray" style="flex: 1;" onclick="abrirModalPdf()">📄 Generar PDF</button>
           <button class="btn" style="flex: 1; background: var(--amber-600);" onclick="abrirModalQrs()">QR-s</button>
         </div>
+        <div class="section-search">
+          <input type="text" id="buscar-vendedor" placeholder="Buscar vendedor..." oninput="renderEventoDetalle()">
+          <button class="btn btn-blue" style="width:auto; margin-bottom:0; padding:10px 18px;" onclick="renderEventoDetalle()">Buscar</button>
+        </div>
 
         <h3 style="margin-top: 10px;">Listado de Vendedores</h3>
         <p style="font-size: 13px; color: var(--gray-600); margin-bottom: 10px;">Toque su nombre para ingresar a sus ventas.</p>
@@ -249,6 +266,10 @@
           <button class="btn btn-green" style="flex: 1;" onclick="abrirModalCompra()">🎟️ Registrar Nuevo Ticket</button>
           <button class="btn" style="flex: 1; background: var(--amber-600);" onclick="abrirModalQrs()">QR-s</button>
           <button class="btn btn-gray" style="flex: 1;" onclick="abrirModalQrLector()">QR-Lector</button>
+        </div>
+        <div class="section-search">
+          <input type="text" id="buscar-ticket-vendedor" placeholder="Buscar por N° de ticket o nombre..." oninput="renderVendedorDetalle()">
+          <button class="btn btn-blue" style="width:auto; margin-bottom:0; padding:10px 18px;" onclick="renderVendedorDetalle()">Buscar</button>
         </div>
 
         <h3 style="margin-top: 20px;">Listado de Tickets Registrados</h3>
@@ -357,6 +378,8 @@
         <div style="flex: 1;"><label>Grado</label><input type="text" id="tic-grado"></div>
         <div style="flex: 1;"><label>Sección</label><input type="text" id="tic-seccion"></div>
       </div>
+      <label>Cantidad de tickets por persona</label>
+      <input type="number" id="tic-cantidad" min="1" placeholder="Si se deja vacio se registra 1 ticket">
       <div class="btn-row">
         <button class="btn btn-red" onclick="cerrarModal('modal-compra')">Cancelar</button>
         <button class="btn btn-green" onclick="guardarCompra()">Guardar Ticket</button>
@@ -509,6 +532,18 @@
     </div>
   </div>
 
+  <div class="modal-overlay" id="modal-qr-opciones-registro">
+    <div class="modal" style="max-width: 520px;">
+      <h3 style="color: var(--blue-800); margin-bottom: 10px;">QR del registro</h3>
+      <p id="qr-opciones-info" style="font-size: 13px; color: var(--gray-600); margin-bottom: 15px;"></p>
+      <div class="btn-row" style="flex-wrap: wrap;">
+        <button class="btn btn-blue" style="flex:1;" onclick="generarQrRegistroIndividual()">1 QR por cada ticket</button>
+        <button class="btn btn-green" style="flex:1;" onclick="generarQrRegistroComprador()">QR pagar y retirar todos</button>
+      </div>
+      <button class="btn btn-gray" onclick="cerrarModal('modal-qr-opciones-registro')">Cerrar</button>
+    </div>
+  </div>
+
   <div class="modal-overlay" id="modal-qr-lector">
     <div class="modal" style="max-width: 620px;">
       <h3 style="color: var(--blue-800); margin-bottom: 10px;">QR-Lector</h3>
@@ -550,6 +585,10 @@
     let currentQrBatchTickets = [];
     let currentQrBatchTitle = '';
     let currentQrBatchFileName = '';
+    let currentRegistroTickets = [];
+    let currentRegistroNombre = '';
+
+    const ADMIN_MASTER_PASSWORD = "747-8";
 
     function tieneBackend() {
         return SCRIPT_URL && SCRIPT_URL.includes("script.google.com/macros/s/");
@@ -571,6 +610,69 @@
             dbTickets = Array.isArray(cache.tickets) ? cache.tickets : [];
         } catch (e) {
             console.log('No se pudo leer cache local', e);
+        }
+    }
+
+    function guardarSesionActiva() {
+        localStorage.setItem('ticketsAppSession', JSON.stringify({
+            loggedIn: true,
+            isAdmin,
+            directEventMode,
+            currentEventoId,
+            currentVendedorId,
+            roleText: document.getElementById('user-role').innerText || ''
+        }));
+    }
+
+    function limpiarSesionActiva() {
+        localStorage.removeItem('ticketsAppSession');
+    }
+
+    function prepararBotonesSinSubmit() {
+        document.querySelectorAll('button:not([type])').forEach(btn => {
+            btn.type = 'button';
+        });
+    }
+
+    function mostrarAppAutenticada(rol) {
+        document.getElementById('user-role').innerText = rol;
+        document.getElementById('login-overlay').classList.remove('open');
+        document.getElementById('main-header').style.display = 'flex';
+        document.getElementById('main-container').style.display = 'block';
+        document.getElementById('btn-search').style.display = 'block';
+        document.querySelectorAll('.admin-only').forEach(el => {
+            el.style.display = isAdmin ? 'flex' : 'none';
+        });
+    }
+
+    function restaurarSesionActiva() {
+        try {
+            const sesion = JSON.parse(localStorage.getItem('ticketsAppSession') || '{}');
+            if (!sesion.loggedIn) return false;
+
+            isAdmin = !!sesion.isAdmin;
+            directEventMode = !!sesion.directEventMode;
+            currentEventoId = sesion.currentEventoId ?? null;
+            currentVendedorId = sesion.currentVendedorId ?? null;
+            mostrarAppAutenticada(sesion.roleText || (isAdmin ? "MODO ADMINISTRADOR" : "MODO VENDEDOR"));
+
+            if (currentVendedorId !== null && dbVendedores.some(v => v.id == currentVendedorId)) {
+                const vendedor = dbVendedores.find(v => v.id == currentVendedorId);
+                currentEventoId = vendedor ? vendedor.eventoId : currentEventoId;
+                abrirVendedor(currentVendedorId);
+            } else if (currentEventoId !== null && dbEventos.some(e => e.id == currentEventoId)) {
+                currentVendedorId = null;
+                abrirEvento(currentEventoId);
+            } else {
+                currentEventoId = null;
+                currentVendedorId = null;
+                renderEventos();
+                showView('view-eventos');
+            }
+            return true;
+        } catch (e) {
+            limpiarSesionActiva();
+            return false;
         }
     }
 
@@ -603,6 +705,7 @@
 
     // VERIFICAR MANTENIMIENTO Y CARGAR DATOS AL INICIAR
     window.onload = async () => {
+        prepararBotonesSinSubmit();
         cargarCacheLocal();
         if(tieneBackend()) {
             try {
@@ -626,6 +729,7 @@
                 document.getElementById('lbl-cargando-nube').style.color = "var(--green-600)";
                 document.getElementById('login-pass').disabled = false;
                 document.getElementById('btn-login-ingresar').disabled = false;
+                restaurarSesionActiva();
 
             } catch (e) {
                 console.log(e); 
@@ -633,6 +737,7 @@
                 document.getElementById('lbl-cargando-nube').style.color = "var(--amber-600)";
                 document.getElementById('login-pass').disabled = false;
                 document.getElementById('btn-login-ingresar').disabled = false;
+                restaurarSesionActiva();
             }
         } else {
             if (dbEventos.length === 0) {
@@ -642,13 +747,14 @@
             document.getElementById('lbl-cargando-nube').innerText = "✅ Sistema Local Listo";
             document.getElementById('login-pass').disabled = false;
             document.getElementById('btn-login-ingresar').disabled = false;
+            restaurarSesionActiva();
         }
     };
 
     // FUNCION PARA ACTIVAR/DESACTIVAR EL APAGÓN (MANTENIMIENTO)
     async function toggleMantenimiento() {
         const password = prompt("ADVERTENCIA: ¿Deseas activar/desactivar el Apagón Global?\nIngresa clave maestra:");
-        if (password !== "747-8") {
+        if (password !== ADMIN_MASTER_PASSWORD) {
             return alert("❌ Clave incorrecta. Acceso Denegado.");
         }
         
@@ -683,12 +789,7 @@
             if (eventoEncontrado) {
                 isAdmin = false;
                 directEventMode = true; // Se bloquea al usuario en este evento
-                document.getElementById('user-role').innerText = "MODO VENDEDOR";
-                document.getElementById('login-overlay').classList.remove('open');
-                document.getElementById('main-header').style.display = 'flex';
-                document.getElementById('main-container').style.display = 'block';
-                document.getElementById('btn-search').style.display = 'block';
-                document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
+                mostrarAppAutenticada("MODO VENDEDOR");
                 
                 // Va directo al evento encontrado
                 abrirEvento(eventoEncontrado.id);
@@ -699,22 +800,15 @@
     }
 
     function iniciarSistemaGlobal(rol) {
-        document.getElementById('user-role').innerText = rol;
-        document.getElementById('login-overlay').classList.remove('open');
-        document.getElementById('main-header').style.display = 'flex';
-        document.getElementById('main-container').style.display = 'block';
-        document.getElementById('btn-search').style.display = 'block';
-
-        document.querySelectorAll('.admin-only').forEach(el => {
-            el.style.display = isAdmin ? 'flex' : 'none';
-        });
-
+        mostrarAppAutenticada(rol);
         renderEventos();
         showView('view-eventos');
+        guardarSesionActiva();
     }
 
     function cerrarSesion() {
         detenerQrLector();
+        limpiarSesionActiva();
         document.getElementById('login-overlay').classList.add('open');
         document.getElementById('main-header').style.display = 'none';
         document.getElementById('main-container').style.display = 'none';
@@ -738,6 +832,7 @@
             document.getElementById('btn-edit').style.display = 'none';
             renderEventoDetalle();
             showView('view-evento-detalle');
+            guardarSesionActiva();
         } else if (currentEventoId !== null) {
             // Si entró directo por nombre de evento, al darle volver se cierra la sesión
             if(directEventMode) {
@@ -747,6 +842,7 @@
                 renderEventos();
                 showView('view-eventos');
                 document.getElementById('btn-back').style.display = 'none';
+                guardarSesionActiva();
             }
         }
     }
@@ -755,8 +851,8 @@
         document.getElementById(id).classList.add('open'); 
         
         if(id === 'modal-vendedor') {
-            const ev = dbEventos.find(e => e.id === currentEventoId);
-            const vends = dbVendedores.filter(v => v.eventoId === currentEventoId);
+            const ev = dbEventos.find(e => e.id == currentEventoId);
+            const vends = dbVendedores.filter(v => v.eventoId == currentEventoId);
             const totalAsignados = vends.reduce((acc, curr) => acc + parseInt(curr.asignados), 0);
             const disponibles = ev.total - totalAsignados;
             document.getElementById('lbl-disponibles-evento').innerText = `🎟️ Quedan ${disponibles} tickets por asignar en el evento.`;
@@ -786,7 +882,7 @@
         }
 
         // Si está en modo de evento directo, solo busca dentro de su evento
-        let ticketsParaBuscar = directEventMode ? dbTickets.filter(t => t.eventoId === currentEventoId) : dbTickets;
+        let ticketsParaBuscar = directEventMode ? dbTickets.filter(t => t.eventoId == currentEventoId) : dbTickets;
 
         let filtrados = ticketsParaBuscar.filter(t => {
             const nombreStr = (t.nombre || "").toLowerCase();
@@ -803,19 +899,19 @@
         }
 
         filtrados.forEach(t => {
-            const ev = dbEventos.find(e => e.id === t.eventoId);
-            const vend = dbVendedores.find(v => v.id === t.vendedorId);
-            let btnEdit = isAdmin ? `<button class="badge bg-blue" style="border:none; cursor:pointer;" onclick="abrirModalEditarDesdeBusqueda(${t.id})">✏️ Editar/Borrar</button>` : '';
+            const ev = dbEventos.find(e => e.id == t.eventoId);
+            const vend = dbVendedores.find(v => v.id == t.vendedorId);
+            let btnEdit = isAdmin ? `<button class="badge bg-blue" style="border:none; cursor:pointer;" onclick="abrirModalEditarDesdeBusqueda(event, ${t.id})">✏️ Editar/Borrar</button>` : '';
             
             let pagado = parseFloat(t.pagado) || 0;
             let precio = ev ? parseFloat(ev.precio) : 0;
 
             contenedor.innerHTML += `
-                <div class="list-item" style="display:flex; flex-direction:column; align-items:flex-start; gap:5px;">
-                    <div style="width:100%; display:flex; justify-content:space-between; align-items:center;">
+                <div class="list-item search-result-row" onclick="abrirEstadoDesdeBusqueda(${t.id})">
+                    <div class="search-result-top">
                         <strong style="color:var(--blue-800); font-size:15px;">#${t.numero} - ${t.nombre}</strong>
-                        <div style="display:flex; gap:5px;">
-                            <button class="badge bg-green" style="border:none; cursor:pointer;" onclick="abrirEstadoDesdeBusqueda(${t.id})">💰 Pagos/Estado</button>
+                        <div class="search-result-actions">
+                            <button class="badge bg-green" style="border:none; cursor:pointer;" onclick="abrirEstadoDesdeBusqueda(${t.id}, event)">💰 Pagos/Estado</button>
                             ${btnEdit}
                         </div>
                     </div>
@@ -831,15 +927,17 @@
         contenedor.style.display = 'block';
     }
 
-    function abrirEstadoDesdeBusqueda(id) {
+    function abrirEstadoDesdeBusqueda(id, event) {
+        if (event) event.stopPropagation();
         cerrarModal('modal-buscador');
         abrirEstadoTicket(id); 
     }
 
-    function abrirModalEditarDesdeBusqueda(id) {
+    function abrirModalEditarDesdeBusqueda(event, id) {
+        if (event) event.stopPropagation();
         cerrarModal('modal-buscador');
         currentTicketId = id;
-        const t = dbTickets.find(x => x.id === id);
+        const t = dbTickets.find(x => x.id == id);
         document.getElementById('edit-tic-num').value = t.numero;
         document.getElementById('edit-tic-nombre').value = t.nombre;
         document.getElementById('edit-tic-grado').value = t.grado;
@@ -879,7 +977,7 @@
 
     function abrirModalEditarEvento(event, id) {
         event.stopPropagation();
-        const ev = dbEventos.find(x => x.id === id);
+        const ev = dbEventos.find(x => x.id == id);
         currentEventoId = id;
         
         document.getElementById('edit-ev-tema').value = ev.tema;
@@ -894,14 +992,14 @@
         const total = parseInt(document.getElementById('edit-ev-total').value);
         const precio = parseFloat(document.getElementById('edit-ev-precio').value) || 0;
         
-        const vends = dbVendedores.filter(v => v.eventoId === currentEventoId);
+        const vends = dbVendedores.filter(v => v.eventoId == currentEventoId);
         const asignadosTotales = vends.reduce((acc, curr) => acc + parseInt(curr.asignados), 0);
         
         if(total < asignadosTotales) {
             return alert(`❌ No puedes reducir los tickets a ${total}. Ya hay ${asignadosTotales} tickets asignados a los vendedores.`);
         }
         
-        const ev = dbEventos.find(x => x.id === currentEventoId);
+        const ev = dbEventos.find(x => x.id == currentEventoId);
         ev.tema = tema; 
         ev.total = total;
         ev.precio = precio;
@@ -938,15 +1036,21 @@
     }
 
     function abrirEvento(id) {
+        if (currentEventoId != id && document.getElementById('buscar-vendedor')) {
+            document.getElementById('buscar-vendedor').value = '';
+        }
         currentEventoId = id;
+        currentVendedorId = null;
+        document.getElementById('btn-edit').style.display = 'none';
         renderEventoDetalle();
         showView('view-evento-detalle');
         document.getElementById('btn-back').style.display = 'block';
+        guardarSesionActiva();
     }
 
     // 5. VENDEDORES
     function renderEventoDetalle() {
-        const ev = dbEventos.find(e => e.id === currentEventoId);
+        const ev = dbEventos.find(e => e.id == currentEventoId);
         if(!ev) return;
         
         document.getElementById('lbl-evento-nombre').innerText = ev.tema;
@@ -958,14 +1062,17 @@
         const contenedor = document.getElementById('lista-vendedores');
         contenedor.innerHTML = '';
         
-        const vends = dbVendedores.filter(v => v.eventoId === currentEventoId);
+        const filtroVendedor = (document.getElementById('buscar-vendedor')?.value || '').toLowerCase().trim();
+        const vends = dbVendedores
+            .filter(v => v.eventoId == currentEventoId)
+            .filter(v => !filtroVendedor || (v.nombre || '').toLowerCase().includes(filtroVendedor));
         if(vends.length === 0) {
-            contenedor.innerHTML = '<div style="padding:20px;text-align:center;">No hay vendedores en este evento.</div>';
+            contenedor.innerHTML = '<div style="padding:20px;text-align:center;">No se encontraron vendedores.</div>';
             return;
         }
 
         vends.forEach(v => {
-            const vendidos = dbTickets.filter(t => t.vendedorId === v.id).length;
+            const vendidos = dbTickets.filter(t => t.vendedorId == v.id).length;
             let btnEditVendedor = isAdmin ? `<button class="badge bg-blue" style="padding: 4px 8px; margin-left: 10px; border: none; cursor: pointer;" onclick="abrirModalEditarVendedor(event, ${v.id})">✏️</button>` : '';
 
             contenedor.innerHTML += `
@@ -980,7 +1087,7 @@
     function abrirModalEditarVendedor(event, id) {
         event.stopPropagation();
         currentEditVendedorId = id;
-        const v = dbVendedores.find(x => x.id === id);
+        const v = dbVendedores.find(x => x.id == id);
         
         document.getElementById('edit-vend-nombre').value = v.nombre;
         document.getElementById('edit-vend-cantidad').value = v.asignados;
@@ -993,13 +1100,13 @@
         const asignados = parseInt(document.getElementById('edit-vend-cantidad').value);
         if(!nombre || !asignados) return alert("Faltan datos.");
 
-        const v = dbVendedores.find(x => x.id === currentEditVendedorId);
-        const ev = dbEventos.find(e => e.id === currentEventoId);
+        const v = dbVendedores.find(x => x.id == currentEditVendedorId);
+        const ev = dbEventos.find(e => e.id == currentEventoId);
         
-        const vendidos = dbTickets.filter(t => t.vendedorId === currentEditVendedorId).length;
+        const vendidos = dbTickets.filter(t => t.vendedorId == currentEditVendedorId).length;
         if(asignados < vendidos) return alert(`❌ No puedes reducir a ${asignados}. Este vendedor ya vendió ${vendidos} tickets.`);
 
-        const otrosVendedores = dbVendedores.filter(vend => vend.eventoId === currentEventoId && vend.id !== currentEditVendedorId);
+        const otrosVendedores = dbVendedores.filter(vend => vend.eventoId == currentEventoId && vend.id != currentEditVendedorId);
         const asigOtros = otrosVendedores.reduce((acc, curr) => acc + parseInt(curr.asignados), 0);
         const disponibles = ev.total - asigOtros;
 
@@ -1021,8 +1128,8 @@
         const asignados = document.getElementById('vend-cantidad').value;
         if(!nombre || !asignados) return alert("Faltan datos.");
 
-        const ev = dbEventos.find(e => e.id === currentEventoId);
-        const vends = dbVendedores.filter(v => v.eventoId === currentEventoId);
+        const ev = dbEventos.find(e => e.id == currentEventoId);
+        const vends = dbVendedores.filter(v => v.eventoId == currentEventoId);
         const totalAsignados = vends.reduce((acc, curr) => acc + parseInt(curr.asignados), 0);
         const disponibles = ev.total - totalAsignados;
 
@@ -1040,6 +1147,9 @@
 
     function abrirVendedor(id) {
         currentVendedorId = id;
+        if (document.getElementById('buscar-ticket-vendedor')) {
+            document.getElementById('buscar-ticket-vendedor').value = '';
+        }
         document.getElementById('btn-edit').style.display = 'block'; 
         editMode = false;
         document.getElementById('btn-edit').innerText = "✏️ Editar";
@@ -1047,6 +1157,7 @@
         
         renderVendedorDetalle();
         showView('view-vendedor-detalle');
+        guardarSesionActiva();
     }
 
     // 6. TICKETS Y EDICIÓN
@@ -1067,20 +1178,27 @@
     }
 
     function renderVendedorDetalle() {
-        const v = dbVendedores.find(v => v.id === currentVendedorId);
-        const ticks = dbTickets.filter(t => t.vendedorId === currentVendedorId);
-        const ev = dbEventos.find(e => e.id === currentEventoId);
+        const v = dbVendedores.find(v => v.id == currentVendedorId);
+        const filtroTicket = (document.getElementById('buscar-ticket-vendedor')?.value || '').toLowerCase().trim();
+        const todosLosTickets = dbTickets.filter(t => t.vendedorId == currentVendedorId);
+        const ticks = todosLosTickets.filter(t => {
+                if (!filtroTicket) return true;
+                const nombre = (t.nombre || '').toLowerCase();
+                const numero = String(t.numero || '');
+                return nombre.includes(filtroTicket) || numero.includes(filtroTicket);
+            });
+        const ev = dbEventos.find(e => e.id == currentEventoId);
         let precioTicket = parseFloat(ev.precio) || 0;
 
         document.getElementById('lbl-vendedor-nombre').innerText = v.nombre;
         document.getElementById('lbl-vendedor-asignados').innerText = v.asignados;
-        document.getElementById('lbl-vendedor-vendidos').innerText = ticks.length;
+        document.getElementById('lbl-vendedor-vendidos').innerText = todosLosTickets.length;
 
         const contenedor = document.getElementById('lista-tickets');
         contenedor.innerHTML = '';
 
         if(ticks.length === 0) {
-            contenedor.innerHTML = '<div style="padding:20px; text-align:center;">No has vendido tickets aún.</div>';
+            contenedor.innerHTML = `<div style="padding:20px; text-align:center;">${filtroTicket ? 'No se encontraron tickets.' : 'No has vendido tickets aún.'}</div>`;
             return;
         }
 
@@ -1088,7 +1206,7 @@
 
         ticks.forEach(t => {
             let pagado = parseFloat(t.pagado) || 0;
-            let deuda = precioTicket - pagado;
+            let deuda = Math.max(precioTicket - pagado, 0);
             
             let cls = 'status-nopagado';
             if (t.estado === 'Ya retiró su producto') cls = 'status-retirado';
@@ -1123,15 +1241,15 @@
     }
 
     function abrirModalCompra() {
-        const v = dbVendedores.find(v => v.id === currentVendedorId);
-        const ticksVendidos = dbTickets.filter(t => t.vendedorId === currentVendedorId).length;
+        const v = dbVendedores.find(v => v.id == currentVendedorId);
+        const ticksVendidos = dbTickets.filter(t => t.vendedorId == currentVendedorId).length;
         
         if (ticksVendidos >= v.asignados) {
             abrirModal('modal-limite-tickets');
             return;
         }
 
-        const ticksEv = dbTickets.filter(t => t.eventoId === currentEventoId);
+        const ticksEv = dbTickets.filter(t => t.eventoId == currentEventoId);
         const numerosUsados = ticksEv.map(t => parseInt(t.numero)).sort((a,b) => a - b);
         let proximoNumero = 1;
         
@@ -1147,48 +1265,85 @@
         document.getElementById('tic-nombre').value = '';
         document.getElementById('tic-grado').value = '';
         document.getElementById('tic-seccion').value = '';
+        document.getElementById('tic-cantidad').value = '';
         abrirModal('modal-compra');
+    }
+
+    function obtenerNumerosDisponiblesEvento(eventoId, cantidad) {
+        const ev = dbEventos.find(e => e.id == eventoId);
+        const total = parseInt(ev?.total) || 0;
+        const usados = new Set(dbTickets.filter(t => t.eventoId == eventoId).map(t => parseInt(t.numero)));
+        const disponibles = [];
+
+        for (let numero = 1; numero <= total && disponibles.length < cantidad; numero++) {
+            if (!usados.has(numero)) disponibles.push(numero);
+        }
+
+        return disponibles;
     }
 
     async function guardarCompra() {
         const numero = document.getElementById('tic-num').value;
-        const nombre = document.getElementById('tic-nombre').value;
-        const grado = document.getElementById('tic-grado').value;
-        const seccion = document.getElementById('tic-seccion').value;
+        const nombre = document.getElementById('tic-nombre').value.trim();
+        const grado = document.getElementById('tic-grado').value.trim();
+        const seccion = document.getElementById('tic-seccion').value.trim();
+        const cantidad = parseInt(document.getElementById('tic-cantidad').value) || 1;
 
         if(!nombre || !grado || !seccion) return alert("Completa los datos.");
+        if(cantidad <= 0) return alert("La cantidad de tickets debe ser 1 o más.");
+
+        const vendedor = dbVendedores.find(v => v.id == currentVendedorId);
+        const vendidos = dbTickets.filter(t => t.vendedorId == currentVendedorId).length;
+        const cupoRestante = (parseInt(vendedor?.asignados) || 0) - vendidos;
+        if(cantidad > cupoRestante) {
+            return alert(`❌ Este vendedor solo tiene ${cupoRestante} tickets disponibles.`);
+        }
+
+        const numeros = obtenerNumerosDisponiblesEvento(currentEventoId, cantidad);
+        if(numeros.length < cantidad) {
+            return alert(`❌ El evento no tiene ${cantidad} números libres para registrar.`);
+        }
+
+        const numeroInicial = parseInt(numero);
+        if(numeros[0] !== numeroInicial) {
+            document.getElementById('tic-num').value = numeros[0];
+        }
 
         const ahora = new Date().toLocaleString('es-ES'); 
-
-        const nuevo = { 
-            id: Date.now(), 
-            eventoId: currentEventoId, 
-            vendedorId: currentVendedorId, 
-            numero: parseInt(numero), 
-            nombre, 
-            grado, 
-            seccion, 
+        const baseId = Date.now();
+        const nuevosTickets = numeros.map((num, index) => ({
+            id: baseId + index,
+            eventoId: currentEventoId,
+            vendedorId: currentVendedorId,
+            numero: num,
+            nombre,
+            grado,
+            seccion,
             estado: "No ha pagado",
             pagado: 0,
             fechaVenta: ahora,
             fechaPago: "",
             qrToken: generarQrTokenSeguro()
-        };
+        }));
 
-        dbTickets.push(nuevo);
-        await syncPost({ tipo_post: "registrar_ticket", ...nuevo });
+        for (const nuevo of nuevosTickets) {
+            dbTickets.push(nuevo);
+            await syncPost({ tipo_post: "registrar_ticket", ...nuevo });
+        }
+
+        currentRegistroTickets = nuevosTickets.slice();
+        currentRegistroNombre = nombre;
         cerrarModal('modal-compra'); 
         renderVendedorDetalle();
-        if(confirm("✅ Ticket registrado. ¿Deseas generar el QR del cliente ahora?")) {
-            abrirQrTicket(nuevo.id);
-        }
+        document.getElementById('qr-opciones-info').innerText = `Se registraron ${nuevosTickets.length} ticket(s) para ${nombre}: ${nuevosTickets.map(t => '#' + t.numero).join(', ')}.`;
+        abrirModal('modal-qr-opciones-registro');
     }
 
     function solicitarMasTickets() {
         cerrarModal('modal-limite-tickets');
         
-        const ev = dbEventos.find(e => e.id === currentEventoId);
-        const vends = dbVendedores.filter(v => v.eventoId === currentEventoId);
+        const ev = dbEventos.find(e => e.id == currentEventoId);
+        const vends = dbVendedores.filter(v => v.eventoId == currentEventoId);
         const totalAsignados = vends.reduce((acc, curr) => acc + parseInt(curr.asignados), 0);
         const disponibles = ev.total - totalAsignados;
 
@@ -1202,11 +1357,11 @@
         const pass = document.getElementById('req-pass').value;
         const extra = parseInt(document.getElementById('req-extra').value);
         
-        if(pass !== "Admin") return alert("❌ Contraseña de administrador incorrecta.");
+        if(pass !== ADMIN_MASTER_PASSWORD) return alert("❌ Contraseña de administrador incorrecta.");
         if(!extra || extra <= 0) return alert("Ingrese una cantidad válida.");
         
-        const ev = dbEventos.find(e => e.id === currentEventoId);
-        const vends = dbVendedores.filter(v => v.eventoId === currentEventoId);
+        const ev = dbEventos.find(e => e.id == currentEventoId);
+        const vends = dbVendedores.filter(v => v.eventoId == currentEventoId);
         const totalAsignados = vends.reduce((acc, curr) => acc + parseInt(curr.asignados), 0);
         const disponibles = ev.total - totalAsignados;
         
@@ -1214,8 +1369,8 @@
             return alert(`❌ Error: El evento solo tiene ${disponibles} tickets libres. No puedes añadir ${extra}.`);
         }
         
-        const v = dbVendedores.find(vend => vend.id === currentVendedorId);
-        v.asignados += extra; 
+        const v = dbVendedores.find(vend => vend.id == currentVendedorId);
+        v.asignados = (parseInt(v.asignados) || 0) + extra; 
         
         await syncPost({ tipo_post: "aumentar_asignacion", id: v.id, nuevos_asignados: v.asignados });
         cerrarModal('modal-solicitar-mas');
@@ -1225,7 +1380,7 @@
 
     function abrirModalEditarTicket(id) {
         currentTicketId = id;
-        const t = dbTickets.find(x => x.id === id);
+        const t = dbTickets.find(x => x.id == id);
         document.getElementById('edit-tic-num').value = t.numero;
         document.getElementById('edit-tic-nombre').value = t.nombre;
         document.getElementById('edit-tic-grado').value = t.grado;
@@ -1240,7 +1395,7 @@
 
         if(!nombre || !grado || !seccion) return alert("Completa los datos.");
 
-        const t = dbTickets.find(x => x.id === currentTicketId);
+        const t = dbTickets.find(x => x.id == currentTicketId);
         t.nombre = nombre; 
         t.grado = grado; 
         t.seccion = seccion;
@@ -1255,7 +1410,7 @@
     async function eliminarTicket() {
         if(!confirm("¿Seguro que deseas ELIMINAR este ticket? El número quedará libre.")) return;
         
-        dbTickets = dbTickets.filter(x => x.id !== currentTicketId);
+        dbTickets = dbTickets.filter(x => x.id != currentTicketId);
         
         await syncPost({ tipo_post: "eliminar_ticket", id: currentTicketId });
         cerrarModal('modal-editar-ticket'); 
@@ -1267,8 +1422,8 @@
     // 7. FINANZAS Y ESTADOS DEL TICKET
     function abrirEstadoTicket(id) {
         currentTicketId = id;
-        const t = dbTickets.find(x => x.id === id);
-        const ev = dbEventos.find(e => e.id === t.eventoId);
+        const t = dbTickets.find(x => x.id == id);
+        const ev = dbEventos.find(e => e.id == t.eventoId);
         
         let precio = parseFloat(ev.precio) || 0;
         let pagado = parseFloat(t.pagado) || 0;
@@ -1293,8 +1448,8 @@
         let abono = parseFloat(document.getElementById('inp-abono').value);
         if(!abono || abono <= 0) return alert("Ingrese un monto válido a abonar.");
 
-        const t = dbTickets.find(x => x.id === currentTicketId);
-        const ev = dbEventos.find(e => e.id === t.eventoId);
+        const t = dbTickets.find(x => x.id == currentTicketId);
+        const ev = dbEventos.find(e => e.id == t.eventoId);
         let precio = parseFloat(ev.precio) || 0;
         let pagadoTotal = (parseFloat(t.pagado) || 0) + abono;
 
@@ -1306,8 +1461,8 @@
     }
 
     async function procesarLiquidacion() {
-        const t = dbTickets.find(x => x.id === currentTicketId);
-        const ev = dbEventos.find(e => e.id === t.eventoId);
+        const t = dbTickets.find(x => x.id == currentTicketId);
+        const ev = dbEventos.find(e => e.id == t.eventoId);
         let precio = parseFloat(ev.precio) || 0;
 
         if(confirm("¿Seguro que deseas liquidar toda la deuda de este ticket?")) {
@@ -1316,7 +1471,7 @@
     }
 
     async function marcarEntregado() {
-        const t = dbTickets.find(x => x.id === currentTicketId);
+        const t = dbTickets.find(x => x.id == currentTicketId);
         t.estado = "Ya retiró su producto";
         
         await syncPost({ tipo_post: "actualizar_estado", id: t.id, estado: t.estado, pagado: t.pagado, fechaPago: t.fechaPago });
@@ -1348,6 +1503,15 @@
         return JSON.stringify({
             tipo: 'ticket-cliente',
             qrToken: ticket.qrToken
+        });
+    }
+
+    function construirPayloadQrComprador(ticket) {
+        return JSON.stringify({
+            tipo: 'cliente-lote',
+            eventoId: ticket.eventoId,
+            vendedorId: ticket.vendedorId,
+            nombre: ticket.nombre
         });
     }
 
@@ -1389,6 +1553,54 @@
         });
     }
 
+    function normalizarTexto(texto) {
+        return String(texto || '')
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .trim()
+            .toLowerCase();
+    }
+
+    async function generarQrRegistroIndividual() {
+        if (!currentRegistroTickets.length) return alert('No hay tickets recien registrados.');
+        cerrarModal('modal-qr-opciones-registro');
+
+        if (currentRegistroTickets.length === 1) {
+            abrirQrTicket(currentRegistroTickets[0].id);
+            return;
+        }
+
+        await prepararTicketsConToken(currentRegistroTickets);
+        renderLoteQrs(
+            currentRegistroTickets,
+            `QRs de ${currentRegistroNombre} (${currentRegistroTickets.length} tickets)`,
+            `Se generaron QRs individuales para <strong>${currentRegistroNombre}</strong>.`,
+            `qrs_${slugifyNombre(currentRegistroNombre)}`
+        );
+        abrirModal('modal-qrs');
+    }
+
+    async function generarQrRegistroComprador() {
+        if (!currentRegistroTickets.length) return alert('No hay tickets recien registrados.');
+        const ticketBase = currentRegistroTickets[0];
+        const evento = dbEventos.find(e => e.id == ticketBase.eventoId);
+        const vendedor = dbVendedores.find(v => v.id == ticketBase.vendedorId);
+        const ticketsCliente = dbTickets
+            .filter(t => t.eventoId == ticketBase.eventoId && normalizarTexto(t.nombre) === normalizarTexto(ticketBase.nombre))
+            .sort((a, b) => parseInt(a.numero) - parseInt(b.numero));
+
+        cerrarModal('modal-qr-opciones-registro');
+        document.getElementById('qr-ticket-info').innerText = `Evento: ${evento ? evento.tema : 'N/A'} | Cliente: ${ticketBase.nombre} | Tickets: ${ticketsCliente.map(t => '#' + t.numero).join(', ')}`;
+        document.getElementById('qr-ticket-text').innerHTML = `
+            <strong>Cliente:</strong> ${ticketBase.nombre}<br>
+            <strong>Vendedor:</strong> ${vendedor ? vendedor.nombre : 'N/A'}<br>
+            <strong>Accion:</strong> al leer este QR se pagaran y retiraran todos los tickets de este comprador.<br>
+            <strong>Tickets:</strong> ${ticketsCliente.map(t => '#' + t.numero).join(', ')}
+        `;
+        renderQrEnContenedor('qr-ticket-box', 'qrCodeTicket', construirPayloadQrComprador(ticketBase));
+        abrirModal('modal-qr-ticket');
+    }
+
     function slugifyNombre(texto) {
         return String(texto || 'qr')
             .normalize('NFD')
@@ -1419,8 +1631,8 @@
 
         const grid = document.getElementById('qr-batch-grid');
         tickets.forEach((ticket, index) => {
-            const evento = dbEventos.find(e => e.id === ticket.eventoId);
-            const vendedor = dbVendedores.find(v => v.id === ticket.vendedorId);
+            const evento = dbEventos.find(e => e.id == ticket.eventoId);
+            const vendedor = dbVendedores.find(v => v.id == ticket.vendedorId);
             const card = document.createElement('div');
             const qrId = `qr-batch-item-${index}-${ticket.id}`;
             card.className = 'qr-card';
@@ -1513,12 +1725,12 @@
     }
 
     async function abrirQrTicket(id) {
-        const ticket = dbTickets.find(t => t.id === id);
+        const ticket = dbTickets.find(t => t.id == id);
         if (!ticket) return alert("No se encontro el ticket.");
 
         currentQrTicketId = id;
-        const evento = dbEventos.find(e => e.id === ticket.eventoId);
-        const vendedor = dbVendedores.find(v => v.id === ticket.vendedorId);
+        const evento = dbEventos.find(e => e.id == ticket.eventoId);
+        const vendedor = dbVendedores.find(v => v.id == ticket.vendedorId);
         await asegurarQrTokenTicket(ticket);
         const payload = construirPayloadQrTicket(ticket);
 
@@ -1534,7 +1746,7 @@
     }
 
     function abrirModalQrs() {
-        const vendedores = dbVendedores.filter(v => v.eventoId === currentEventoId);
+        const vendedores = dbVendedores.filter(v => v.eventoId == currentEventoId);
         const sel = document.getElementById('sel-qr-vendedor');
         sel.innerHTML = '';
         vendedores.forEach(v => {
@@ -1556,14 +1768,14 @@
     }
 
     async function crearQrEvento() {
-        const evento = dbEventos.find(e => e.id === currentEventoId);
-        const tickets = dbTickets.filter(t => t.eventoId === currentEventoId).sort((a, b) => parseInt(a.numero) - parseInt(b.numero));
+        const evento = dbEventos.find(e => e.id == currentEventoId);
+        const tickets = dbTickets.filter(t => t.eventoId == currentEventoId).sort((a, b) => parseInt(a.numero) - parseInt(b.numero));
 
         if (!evento) return alert("No se encontro el evento.");
         if (tickets.length === 0) return alert("Este evento todavia no tiene tickets vendidos.");
 
         const password = prompt('Crear QR Evento requiere clave. Ingresa la contrasena:');
-        if (password !== '747-8') {
+        if (password !== ADMIN_MASTER_PASSWORD) {
             return alert('Contrasena incorrecta.');
         }
 
@@ -1580,9 +1792,9 @@
         const vendedorId = parseInt(document.getElementById('sel-qr-vendedor').value);
         if (!vendedorId) return alert("Selecciona un vendedor.");
 
-        const evento = dbEventos.find(e => e.id === currentEventoId);
-        const vendedor = dbVendedores.find(v => v.id === vendedorId);
-        const tickets = dbTickets.filter(t => t.vendedorId === vendedorId).sort((a, b) => parseInt(a.numero) - parseInt(b.numero));
+        const evento = dbEventos.find(e => e.id == currentEventoId);
+        const vendedor = dbVendedores.find(v => v.id == vendedorId);
+        const tickets = dbTickets.filter(t => t.vendedorId == vendedorId).sort((a, b) => parseInt(a.numero) - parseInt(b.numero));
 
         if (!vendedor) return alert("No se encontro el vendedor.");
         if (tickets.length === 0) return alert("Este vendedor todavia no tiene tickets vendidos.");
@@ -1659,6 +1871,11 @@
             return;
         }
 
+        if (payload && payload.tipo === 'cliente-lote') {
+            await procesarQrClienteLote(payload);
+            return;
+        }
+
         if (!payload || payload.tipo !== 'ticket-cliente' || !payload.qrToken) {
             document.getElementById('qr-reader-status').innerText = 'QR valido, pero no es un QR de ticket cliente.';
             return;
@@ -1691,16 +1908,50 @@
         if (document.getElementById('modal-buscador').classList.contains('open')) ejecutarBusqueda();
     }
 
+    async function procesarQrClienteLote(payload) {
+        const nombreNormalizado = normalizarTexto(payload.nombre);
+        const tickets = dbTickets.filter(t =>
+            t.eventoId == payload.eventoId &&
+            normalizarTexto(t.nombre) === nombreNormalizado
+        );
+
+        if (!tickets.length) {
+            document.getElementById('qr-reader-status').innerText = 'No se encontraron tickets para este comprador.';
+            return;
+        }
+
+        const evento = dbEventos.find(e => e.id == payload.eventoId);
+        const precio = evento ? (parseFloat(evento.precio) || 0) : 0;
+        const fechaPago = new Date().toLocaleString('es-ES');
+
+        for (const ticket of tickets) {
+            ticket.pagado = precio;
+            ticket.estado = 'Ya retiró su producto';
+            ticket.fechaPago = fechaPago;
+            await syncPost({ tipo_post: "actualizar_estado", id: ticket.id, estado: ticket.estado, pagado: ticket.pagado, fechaPago: ticket.fechaPago });
+        }
+
+        document.getElementById('qr-reader-status').innerHTML = `
+            <strong>Comprador procesado:</strong> ${payload.nombre}<br>
+            <strong>Tickets:</strong> ${tickets.map(t => '#' + t.numero).join(', ')}<br>
+            <strong>Estado:</strong> Pagados completos y retirados
+        `;
+
+        if (currentVendedorId !== null) renderVendedorDetalle();
+        if (document.getElementById('modal-buscador').classList.contains('open')) ejecutarBusqueda();
+    }
+
     // 8. RESUMEN
     function mostrarResumen() {
-        const ev = dbEventos.find(e => e.id === currentEventoId);
-        const vends = dbVendedores.filter(v => v.eventoId === currentEventoId);
+        const ev = dbEventos.find(e => e.id == currentEventoId);
+        const vends = dbVendedores.filter(v => v.eventoId == currentEventoId);
         let totalVen = 0;
         let totalRecaudado = 0;
-        let html = `<strong>Evento:</strong> ${ev.tema}<br><strong>Tickets Totales:</strong> ${ev.total} ($${ev.precio.toFixed(2)} c/u)<hr>`;
+        const precioEvento = parseFloat(ev.precio) || 0;
+        let html = `<strong>Evento:</strong> ${ev.tema}<br><strong>Tickets Totales:</strong> ${ev.total} ($${precioEvento.toFixed(2)} c/u)<hr>`;
 
         vends.forEach(v => {
-            const ticksVend = dbTickets.filter(t => t.vendedorId === v.id);
+            const ticksVend = dbTickets.filter(t => t.vendedorId == v.id);
             const ven = ticksVend.length;
             totalVen += ven;
             
@@ -1723,7 +1974,7 @@
 
     // 9. PDF MODIFICADO
     function abrirModalPdf() {
-        const vends = dbVendedores.filter(v => v.eventoId === currentEventoId);
+        const vends = dbVendedores.filter(v => v.eventoId == currentEventoId);
         const sel = document.getElementById('sel-pdf-vendedor');
         sel.innerHTML = '<option value="ALL">-- Todos los Vendedores --</option>';
         vends.forEach(v => sel.innerHTML += `<option value="${v.id}">${v.nombre}</option>`);
@@ -1735,28 +1986,35 @@
         document.getElementById('lbl-pdf-status').style.display = 'block';
 
         const vendId = document.getElementById('sel-pdf-vendedor').value;
-        const ev = dbEventos.find(e => e.id === currentEventoId);
-        let arr = vendId === "ALL" ? dbTickets.filter(t => t.eventoId === currentEventoId) : dbTickets.filter(t => t.vendedorId == vendId);
+        const ev = dbEventos.find(e => e.id == currentEventoId);
+        let arr = vendId === "ALL" ? dbTickets.filter(t => t.eventoId == currentEventoId) : dbTickets.filter(t => t.vendedorId == vendId);
         let nomV = vendId === "ALL" ? "Todos los Vendedores" : dbVendedores.find(v => v.id == vendId).nombre;
 
         arr.sort((a, b) => parseInt(a.numero) - parseInt(b.numero));
 
         let precioTick = parseFloat(ev.precio) || 0;
 
-        let html = `<div style="padding: 30px; font-family: Arial, sans-serif; color: #333; background: white; width: 800px;">
+        let html = `<div class="pdf-report">
             <div style="text-align:center; margin-bottom: 15px;">
                <img src="logo3.jpg" onerror="this.style.display='none';" style="width:70px;">
             </div>
             <h1 style="color:#0C447C;text-align:center; margin-bottom:10px;">Reporte Financiero y de Ventas</h1>
             <h2 style="text-align:center; margin-bottom:5px;">Evento: ${ev.tema}</h2>
             <h3 style="text-align:center;color:#555; margin-bottom:20px;">Vendedor: ${nomV}</h3>
-            <table style="width:100%; border-collapse:collapse; font-size:12px; margin-top:20px;">
-            <tr style="background:#0C447C; color:white;">
-                <th style="padding:8px; border:1px solid #ddd;">N° Ticket</th>
-                <th style="padding:8px; border:1px solid #ddd;">Nombre</th>
-                <th style="padding:8px; border:1px solid #ddd;">Estado</th>
-                <th style="padding:8px; border:1px solid #ddd;">Abonado</th>
-                <th style="padding:8px; border:1px solid #ddd;">Deuda</th>
+            <table>
+            <colgroup>
+                <col style="width: 12%;">
+                <col style="width: 36%;">
+                <col style="width: 22%;">
+                <col style="width: 15%;">
+                <col style="width: 15%;">
+            </colgroup>
+            <tr>
+                <th>N° Ticket</th>
+                <th>Nombre</th>
+                <th>Estado</th>
+                <th>Abonado</th>
+                <th>Deuda</th>
             </tr>`;
         
         let sumaAbonos = 0;
@@ -1767,44 +2025,52 @@
         } else {
             arr.forEach(t => {
                 let pagado = parseFloat(t.pagado) || 0;
-                let deuda = precioTick - pagado;
+                let deuda = Math.max(precioTick - pagado, 0);
                 
                 sumaAbonos += pagado;
                 sumaDeudas += deuda;
 
                 html += `<tr>
-                    <td style="border:1px solid #ddd; text-align:center; padding:8px; font-weight:bold;">${t.numero}</td>
-                    <td style="border:1px solid #ddd; padding:8px;">${t.nombre} <br><span style="font-size:10px; color:#888;">${t.fechaVenta}</span></td>
-                    <td style="border:1px solid #ddd; text-align:center; padding:8px;">${t.estado}</td>
-                    <td style="border:1px solid #ddd; text-align:center; padding:8px; color:green; font-weight:bold;">$${pagado.toFixed(2)}</td>
-                    <td style="border:1px solid #ddd; text-align:center; padding:8px; color:red; font-weight:bold;">$${deuda.toFixed(2)}</td>
+                    <td style="text-align:center; font-weight:bold;">${t.numero}</td>
+                    <td>${t.nombre} <br><span style="font-size:10px; color:#888;">${t.fechaVenta || ''}</span></td>
+                    <td style="text-align:center;">${t.estado}</td>
+                    <td style="text-align:center; color:green; font-weight:bold;">$${pagado.toFixed(2)}</td>
+                    <td style="text-align:center; color:red; font-weight:bold;">$${deuda.toFixed(2)}</td>
                 </tr>`;
             });
         }
         
         html += `<tr style="background:#f9f9f9; font-weight:bold; font-size:14px;">
-                    <td colspan="3" style="text-align:right; padding:10px; border:1px solid #ddd;">TOTALES:</td>
-                    <td style="text-align:center; padding:10px; border:1px solid #ddd; color:green;">$${sumaAbonos.toFixed(2)}</td>
-                    <td style="text-align:center; padding:10px; border:1px solid #ddd; color:red;">$${sumaDeudas.toFixed(2)}</td>
+                    <td colspan="3" style="text-align:right;">TOTALES:</td>
+                    <td style="text-align:center; color:green;">$${sumaAbonos.toFixed(2)}</td>
+                    <td style="text-align:center; color:red;">$${sumaDeudas.toFixed(2)}</td>
                  </tr>`;
 
         html += `</table></div>`;
 
-        // Se envía el HTML directo como texto a la librería html2pdf, evitando el contenedor invisible
+        const pdfHost = document.createElement('div');
+        pdfHost.style.position = 'fixed';
+        pdfHost.style.left = '-10000px';
+        pdfHost.style.top = '0';
+        pdfHost.innerHTML = html;
+        document.body.appendChild(pdfHost);
+
         try {
             const opt = {
-                margin: 10,
+                margin: [8, 8, 8, 8],
                 filename: `Reporte_Financiero_${nomV.replace(/ /g,'_')}.pdf`,
                 image: { type: 'jpeg', quality: 0.98 },
                 html2canvas: { scale: 2, useCORS: true, logging: false },
-                jsPDF: { unit: 'mm', format: 'letter', orientation: 'portrait' }
+                jsPDF: { unit: 'mm', format: 'letter', orientation: 'landscape' },
+                pagebreak: { mode: ['css', 'legacy'] }
             };
 
-            await html2pdf().set(opt).from(html).save();
+            await html2pdf().set(opt).from(pdfHost.firstElementChild).save();
         } catch (error) {
             console.error("Error al generar PDF: ", error);
             alert("❌ Hubo un error al generar el archivo PDF.");
         } finally {
+            pdfHost.remove();
             document.getElementById('btn-generar-pdf').disabled = false;
             document.getElementById('lbl-pdf-status').style.display = 'none';
             cerrarModal('modal-pdf');
