@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sistema de Venta de Tickets</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="https://unpkg.com/html5-qrcode"></script>
 
   <style>
     :root {
@@ -125,6 +127,21 @@
     }
     
     .finance-box { background: var(--gray-50); padding: 15px; border-radius: 8px; border: 1px solid var(--gray-100); margin-bottom: 15px; font-size: 14px; }
+    .qr-box { background: white; border: 1px solid var(--gray-100); border-radius: 10px; padding: 15px; min-height: 220px; display: flex; justify-content: center; align-items: center; margin-bottom: 15px; }
+    .qr-box img { max-width: 100%; height: auto; }
+    .qr-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+    .qr-actions .btn { flex: 1; min-width: 150px; }
+    .ticket-actions { display: flex; gap: 8px; align-items: center; justify-content: flex-end; flex-wrap: wrap; }
+    .badge-btn { background: var(--blue-600); color: white; border: none; cursor: pointer; }
+    .scanner-reader { width: 100%; min-height: 280px; border-radius: 10px; overflow: hidden; background: #000; margin-bottom: 15px; }
+    .scanner-log { background: var(--gray-50); border: 1px solid var(--gray-100); border-radius: 8px; padding: 12px; font-size: 13px; line-height: 1.5; }
+    .qr-batch-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-top: 15px; }
+    .qr-card { border: 1px solid var(--gray-100); border-radius: 10px; background: white; padding: 12px; break-inside: avoid; page-break-inside: avoid; }
+    .qr-card-qr { display: flex; justify-content: center; align-items: center; min-height: 220px; margin-bottom: 10px; }
+    .qr-card-qr img { max-width: 100%; height: auto; }
+    .qr-card-title { color: var(--blue-800); font-weight: bold; font-size: 14px; margin-bottom: 6px; }
+    .qr-card-info { font-size: 12px; line-height: 1.4; color: var(--gray-600); }
+    .hidden { display: none !important; }
   </style>
 </head>
 <body>
@@ -198,10 +215,13 @@
         <p style="color: var(--gray-600); margin-bottom: 5px;">Precio por Ticket: <strong id="lbl-evento-precio" style="color: var(--green-600);">$0.00</strong></p>
         <p style="color: var(--gray-600); margin-bottom: 20px;">Total de tickets: <strong id="lbl-evento-total">0</strong></p>
 
-        <div class="btn-row admin-only" style="margin-bottom: 20px; flex-wrap: wrap;">
+        <div class="btn-row admin-only" style="margin-bottom: 12px; flex-wrap: wrap;">
           <button class="btn btn-blue" style="flex: 1;" onclick="abrirModal('modal-vendedor')">👤 Añadir Vendedor</button>
           <button class="btn btn-green" style="flex: 1;" onclick="mostrarResumen()">📊 Resumen Ventas</button>
+        </div>
+        <div class="btn-row" style="margin-bottom: 20px; flex-wrap: wrap;">
           <button class="btn btn-gray" style="flex: 1;" onclick="abrirModalPdf()">📄 Generar PDF</button>
+          <button class="btn" style="flex: 1; background: var(--amber-600);" onclick="abrirModalQrs()">QR-s</button>
         </div>
 
         <h3 style="margin-top: 10px;">Listado de Vendedores</h3>
@@ -225,7 +245,11 @@
           Tickets Asignados: <strong id="lbl-vendedor-asignados">0</strong> | Vendidos: <strong id="lbl-vendedor-vendidos">0</strong>
         </p>
 
-        <button class="btn btn-green" onclick="abrirModalCompra()">🎟️ Registrar Nuevo Ticket</button>
+        <div class="btn-row" style="margin-bottom: 10px; flex-wrap: wrap;">
+          <button class="btn btn-green" style="flex: 1;" onclick="abrirModalCompra()">🎟️ Registrar Nuevo Ticket</button>
+          <button class="btn" style="flex: 1; background: var(--amber-600);" onclick="abrirModalQrs()">QR-s</button>
+          <button class="btn btn-gray" style="flex: 1;" onclick="abrirModalQrLector()">QR-Lector</button>
+        </div>
 
         <h3 style="margin-top: 20px;">Listado de Tickets Registrados</h3>
         <div style="overflow-x: auto;">
@@ -390,6 +414,9 @@
           <button class="btn btn-green" onclick="procesarLiquidacion()">💰 Liquidar Todo</button>
           <button class="btn" style="background:var(--blue-800);" onclick="marcarEntregado()">📦 Entregar Producto</button>
       </div>
+      <div class="btn-row" style="margin-bottom: 10px;">
+          <button class="btn" style="background:var(--amber-600);" onclick="abrirQrTicket(currentTicketId)">QR Cliente</button>
+      </div>
       
       <div class="btn-row">
         <button class="btn btn-gray" onclick="cerrarModal('modal-estado')">Cerrar</button>
@@ -443,6 +470,59 @@
     </div>
   </div>
 
+  <div class="modal-overlay" id="modal-qrs">
+    <div class="modal" style="max-width: 920px;">
+      <h3 style="color: var(--blue-800); margin-bottom: 15px;">QRs del Evento</h3>
+      <div class="qr-actions">
+        <button class="btn btn-blue" onclick="crearQrEvento()">Crear QR Evento</button>
+        <button class="btn btn-green" onclick="crearQrVendedor()">QR Vendedor</button>
+        <button class="btn btn-gray" onclick="abrirModalQrLector()">QR-Lector</button>
+      </div>
+      <div style="margin-top: 12px;">
+        <label>Vendedor para QR individual</label>
+        <select id="sel-qr-vendedor"></select>
+      </div>
+      <div id="qr-summary" style="margin-top:15px; font-size:13px; color:var(--gray-600);"></div>
+      <div id="qr-global-box" class="qr-box" style="margin-top:15px;">
+        <span style="color: var(--gray-600);">Aqui aparecera el QR generado.</span>
+      </div>
+      <div id="qr-global-list" class="scanner-log hidden" style="max-height:260px; overflow:auto;"></div>
+      <div id="qr-batch-actions" class="btn-row hidden" style="margin-top: 15px; flex-wrap: wrap;">
+        <button class="btn btn-green" onclick="compartirLoteQr()">Compartir</button>
+        <button class="btn btn-blue" onclick="descargarPdfLoteQr()">Generar PDF con QRs</button>
+      </div>
+      <div class="btn-row" style="margin-top: 15px;">
+        <button class="btn btn-gray" onclick="cerrarModal('modal-qrs')">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modal-qr-ticket">
+    <div class="modal" style="max-width: 520px;">
+      <h3 style="color: var(--blue-800); margin-bottom: 10px;">QR del Cliente</h3>
+      <p id="qr-ticket-info" style="font-size: 13px; color: var(--gray-600); margin-bottom: 15px;"></p>
+      <div id="qr-ticket-box" class="qr-box"></div>
+      <div id="qr-ticket-text" class="scanner-log"></div>
+      <div class="btn-row" style="margin-top: 15px;">
+        <button class="btn btn-gray" onclick="cerrarModal('modal-qr-ticket')">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modal-qr-lector">
+    <div class="modal" style="max-width: 620px;">
+      <h3 style="color: var(--blue-800); margin-bottom: 10px;">QR-Lector</h3>
+      <p style="font-size: 13px; color: var(--gray-600); margin-bottom: 15px;">Al detectar un QR de ticket, el sistema lo dejara pagado y retirado.</p>
+      <div id="qr-reader" class="scanner-reader"></div>
+      <div id="qr-reader-status" class="scanner-log">Esperando inicio del lector...</div>
+      <div class="btn-row" style="margin-top: 15px;">
+        <button class="btn btn-blue" onclick="iniciarQrLector()">Iniciar lector</button>
+        <button class="btn btn-red" onclick="detenerQrLector()">Detener</button>
+        <button class="btn btn-gray" onclick="cerrarModalQrLector()">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     // ==========================================
     // REEMPLAZA ESTA URL CON LA DE TU APPS SCRIPT
@@ -457,14 +537,74 @@
     let currentVendedorId = null;
     let currentTicketId = null;
     let currentEditVendedorId = null;
+    let currentQrTicketId = null;
     
     let isAdmin = false;
     let editMode = false;
     let directEventMode = false; // Define si el usuario entró directo por nombre de evento
+    let qrCodeGlobal = null;
+    let qrCodeTicket = null;
+    let html5QrScanner = null;
+    let ultimoQrDetectado = '';
+    let ultimoQrDetectadoTs = 0;
+    let currentQrBatchTickets = [];
+    let currentQrBatchTitle = '';
+    let currentQrBatchFileName = '';
+
+    function tieneBackend() {
+        return SCRIPT_URL && SCRIPT_URL.includes("script.google.com/macros/s/");
+    }
+
+    function guardarCacheLocal() {
+        localStorage.setItem('ticketsAppCache', JSON.stringify({
+            eventos: dbEventos,
+            vendedores: dbVendedores,
+            tickets: dbTickets
+        }));
+    }
+
+    function cargarCacheLocal() {
+        try {
+            const cache = JSON.parse(localStorage.getItem('ticketsAppCache') || '{}');
+            dbEventos = Array.isArray(cache.eventos) ? cache.eventos : [];
+            dbVendedores = Array.isArray(cache.vendedores) ? cache.vendedores : [];
+            dbTickets = Array.isArray(cache.tickets) ? cache.tickets : [];
+        } catch (e) {
+            console.log('No se pudo leer cache local', e);
+        }
+    }
+
+    async function syncPost(payload) {
+        if (tieneBackend()) {
+            await fetch(SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                body: JSON.stringify(payload)
+            });
+        }
+        guardarCacheLocal();
+    }
+
+    function generarQrTokenSeguro() {
+        if (window.crypto && window.crypto.randomUUID) {
+            return `${window.crypto.randomUUID()}-${Date.now()}`;
+        }
+
+        const random = Math.random().toString(36).slice(2);
+        return `qr-${Date.now()}-${random}`;
+    }
+
+    async function asegurarQrTokenTicket(ticket) {
+        if (ticket.qrToken) return ticket.qrToken;
+        ticket.qrToken = generarQrTokenSeguro();
+        await syncPost({ tipo_post: "actualizar_qr_token", id: ticket.id, qrToken: ticket.qrToken });
+        return ticket.qrToken;
+    }
 
     // VERIFICAR MANTENIMIENTO Y CARGAR DATOS AL INICIAR
     window.onload = async () => {
-        if(SCRIPT_URL !== "https://script.google.com/macros/s/AKfycbyt95UkpLvkUZEnA3NTSDhL1OULcg5MiGG7kklF8TnE71owY5bMjqFXIeJRaVN00H5APQ/exec") {
+        cargarCacheLocal();
+        if(tieneBackend()) {
             try {
                 const resM = await fetch(SCRIPT_URL + "?tipo=check_mantenimiento");
                 const dataM = await resM.json();
@@ -480,6 +620,7 @@
                 dbEventos = data.eventos || [];
                 dbVendedores = data.vendedores || [];
                 dbTickets = data.tickets || [];
+                guardarCacheLocal();
                 
                 document.getElementById('lbl-cargando-nube').innerText = "✅ Sistema listo";
                 document.getElementById('lbl-cargando-nube').style.color = "var(--green-600)";
@@ -488,12 +629,16 @@
 
             } catch (e) {
                 console.log(e); 
-                document.getElementById('lbl-cargando-nube').innerText = "⚠️ Error de red.";
-                document.getElementById('lbl-cargando-nube').style.color = "var(--red-600)";
+                document.getElementById('lbl-cargando-nube').innerText = dbEventos.length ? "⚠️ Sin red, usando datos guardados." : "⚠️ Error de red.";
+                document.getElementById('lbl-cargando-nube').style.color = "var(--amber-600)";
+                document.getElementById('login-pass').disabled = false;
+                document.getElementById('btn-login-ingresar').disabled = false;
             }
         } else {
-            // Datos de prueba locales
-            dbEventos = [{ id: 1, tema: "Evento de Prueba", total: 100, precio: 10.00 }];
+            if (dbEventos.length === 0) {
+                dbEventos = [{ id: 1, tema: "Evento de Prueba", total: 100, precio: 10.00 }];
+                guardarCacheLocal();
+            }
             document.getElementById('lbl-cargando-nube').innerText = "✅ Sistema Local Listo";
             document.getElementById('login-pass').disabled = false;
             document.getElementById('btn-login-ingresar').disabled = false;
@@ -509,13 +654,7 @@
         
         document.body.style.cursor = "wait";
         try {
-            if(SCRIPT_URL !== "AQUÍ_VA_TU_URL_DE_APPS_SCRIPT") {
-                await fetch(SCRIPT_URL, { 
-                    method: 'POST', 
-                    mode: 'no-cors', 
-                    body: JSON.stringify({ tipo_post: "toggle_mantenimiento", password: password }) 
-                });
-            }
+            await syncPost({ tipo_post: "toggle_mantenimiento", password: password });
             alert("📡 Orden enviada a la Nube."); 
             setTimeout(() => { location.reload(); }, 1500);
         } catch (e) { 
@@ -575,6 +714,7 @@
     }
 
     function cerrarSesion() {
+        detenerQrLector();
         document.getElementById('login-overlay').classList.add('open');
         document.getElementById('main-header').style.display = 'none';
         document.getElementById('main-container').style.display = 'none';
@@ -766,13 +906,7 @@
         ev.total = total;
         ev.precio = precio;
         
-        if(SCRIPT_URL !== "https://script.google.com/macros/s/AKfycbyt95UkpLvkUZEnA3NTSDhL1OULcg5MiGG7kklF8TnE71owY5bMjqFXIeJRaVN00H5APQ/exec") {
-            await fetch(SCRIPT_URL, { 
-                method: 'POST', 
-                mode: 'no-cors', 
-                body: JSON.stringify({ tipo_post: "editar_evento", id: currentEventoId, tema: tema, total: total, precio: precio }) 
-            });
-        }
+        await syncPost({ tipo_post: "editar_evento", id: currentEventoId, tema: tema, total: total, precio: precio });
         
         cerrarModal('modal-editar-evento'); 
         renderEventos();
@@ -787,11 +921,8 @@
 
         const nuevo = { id: Date.now(), tema, total: parseInt(total), precio: precio };
         
-        if(SCRIPT_URL !== "AQUÍ_VA_TU_URL_DE_APPS_SCRIPT") {
-            await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ tipo_post: "crear_evento", ...nuevo }) });
-        }
-        
         dbEventos.push(nuevo);
+        await syncPost({ tipo_post: "crear_evento", ...nuevo });
         cerrarModal('modal-evento'); 
         renderEventos();
     }
@@ -802,10 +933,7 @@
         
         dbEventos = dbEventos.filter(e => e.id !== id);
         
-        if(SCRIPT_URL !== "AQUÍ_VA_TU_URL_DE_APPS_SCRIPT") {
-            await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ tipo_post: "eliminar_evento", id: id }) });
-        }
-        
+        await syncPost({ tipo_post: "eliminar_evento", id: id });
         renderEventos();
     }
 
@@ -882,9 +1010,7 @@
         v.nombre = nombre;
         v.asignados = asignados;
 
-        if(SCRIPT_URL !== "AQUÍ_VA_TU_URL_DE_APPS_SCRIPT") {
-            await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ tipo_post: "editar_vendedor", id: v.id, nombre: nombre, asignados: asignados }) });
-        }
+        await syncPost({ tipo_post: "editar_vendedor", id: v.id, nombre: nombre, asignados: asignados });
 
         cerrarModal('modal-editar-vendedor'); 
         renderEventoDetalle();
@@ -906,11 +1032,8 @@
 
         const nuevo = { id: Date.now(), eventoId: currentEventoId, nombre, asignados: parseInt(asignados) };
         
-        if(SCRIPT_URL !== "AQUÍ_VA_TU_URL_DE_APPS_SCRIPT") {
-            await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ tipo_post: "crear_vendedor", ...nuevo }) });
-        }
-
         dbVendedores.push(nuevo);
+        await syncPost({ tipo_post: "crear_vendedor", ...nuevo });
         cerrarModal('modal-vendedor'); 
         renderEventoDetalle();
     }
@@ -991,7 +1114,10 @@
                         <div style="font-size:10px; color:#999;">Registrado: ${t.fechaVenta || 'N/A'}</div>
                     </div>
                     <div style="${nameStyle}">${t.grado}</div>
-                    <div style="text-align: center;"><span class="badge ${cls}">${t.estado}</span></div>
+                    <div class="ticket-actions">
+                        <span class="badge ${cls}">${t.estado}</span>
+                        <button class="badge badge-btn" onclick="abrirQrTicketDesdeLista(event, ${t.id})">QR</button>
+                    </div>
                 </div>`;
         });
     }
@@ -1045,16 +1171,17 @@
             estado: "No ha pagado",
             pagado: 0,
             fechaVenta: ahora,
-            fechaPago: ""
+            fechaPago: "",
+            qrToken: generarQrTokenSeguro()
         };
 
-        if(SCRIPT_URL !== "AQUÍ_VA_TU_URL_DE_APPS_SCRIPT") {
-            await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ tipo_post: "registrar_ticket", ...nuevo }) });
-        }
-
         dbTickets.push(nuevo);
+        await syncPost({ tipo_post: "registrar_ticket", ...nuevo });
         cerrarModal('modal-compra'); 
         renderVendedorDetalle();
+        if(confirm("✅ Ticket registrado. ¿Deseas generar el QR del cliente ahora?")) {
+            abrirQrTicket(nuevo.id);
+        }
     }
 
     function solicitarMasTickets() {
@@ -1090,10 +1217,7 @@
         const v = dbVendedores.find(vend => vend.id === currentVendedorId);
         v.asignados += extra; 
         
-        if(SCRIPT_URL !== "AQUÍ_VA_TU_URL_DE_APPS_SCRIPT") {
-            await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ tipo_post: "aumentar_asignacion", id: v.id, nuevos_asignados: v.asignados }) });
-        }
-        
+        await syncPost({ tipo_post: "aumentar_asignacion", id: v.id, nuevos_asignados: v.asignados });
         cerrarModal('modal-solicitar-mas');
         renderVendedorDetalle();
         alert(`✅ Se han añadido ${extra} tickets exitosamente.`);
@@ -1121,10 +1245,7 @@
         t.grado = grado; 
         t.seccion = seccion;
 
-        if(SCRIPT_URL !== "AQUÍ_VA_TU_URL_DE_APPS_SCRIPT") {
-            await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ tipo_post: "editar_ticket", id: t.id, nombre, grado, seccion }) });
-        }
-
+        await syncPost({ tipo_post: "editar_ticket", id: t.id, nombre, grado, seccion });
         cerrarModal('modal-editar-ticket'); 
         if(currentVendedorId !== null) {
             renderVendedorDetalle();
@@ -1136,10 +1257,7 @@
         
         dbTickets = dbTickets.filter(x => x.id !== currentTicketId);
         
-        if(SCRIPT_URL !== "AQUÍ_VA_TU_URL_DE_APPS_SCRIPT") {
-            await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ tipo_post: "eliminar_ticket", id: currentTicketId }) });
-        }
-
+        await syncPost({ tipo_post: "eliminar_ticket", id: currentTicketId });
         cerrarModal('modal-editar-ticket'); 
         if(currentVendedorId !== null) {
             renderVendedorDetalle();
@@ -1201,9 +1319,7 @@
         const t = dbTickets.find(x => x.id === currentTicketId);
         t.estado = "Ya retiró su producto";
         
-        if(SCRIPT_URL !== "AQUÍ_VA_TU_URL_DE_APPS_SCRIPT") {
-            await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ tipo_post: "actualizar_estado", id: t.id, estado: t.estado, pagado: t.pagado, fechaPago: t.fechaPago }) });
-        }
+        await syncPost({ tipo_post: "actualizar_estado", id: t.id, estado: t.estado, pagado: t.pagado, fechaPago: t.fechaPago });
         
         cerrarModal('modal-estado'); 
         if (currentVendedorId !== null) renderVendedorDetalle(); else ejecutarBusqueda();
@@ -1217,12 +1333,362 @@
         else if (pagadoTotal >= precio) ticket.estado = "Pagado";
         else ticket.estado = "Abono Parcial";
 
-        if(SCRIPT_URL !== "AQUÍ_VA_TU_URL_DE_APPS_SCRIPT") {
-            await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ tipo_post: "actualizar_estado", id: ticket.id, estado: ticket.estado, pagado: ticket.pagado, fechaPago: ticket.fechaPago }) });
-        }
+        await syncPost({ tipo_post: "actualizar_estado", id: ticket.id, estado: ticket.estado, pagado: ticket.pagado, fechaPago: ticket.fechaPago });
 
         cerrarModal('modal-estado'); 
         if (currentVendedorId !== null) renderVendedorDetalle(); else ejecutarBusqueda();
+    }
+
+    function abrirQrTicketDesdeLista(event, id) {
+        event.stopPropagation();
+        abrirQrTicket(id);
+    }
+
+    function construirPayloadQrTicket(ticket) {
+        return JSON.stringify({
+            tipo: 'ticket-cliente',
+            qrToken: ticket.qrToken
+        });
+    }
+
+    function construirPayloadQrEvento(evento, tickets) {
+        return JSON.stringify({
+            tipo: 'evento-global',
+            eventoId: evento.id,
+            evento: evento.tema,
+            vendidos: tickets.length,
+            compradores: tickets.map(t => ({ numero: t.numero, nombre: t.nombre }))
+        });
+    }
+
+    function construirPayloadQrVendedor(evento, vendedor, tickets) {
+        return JSON.stringify({
+            tipo: 'vendedor-global',
+            eventoId: evento.id,
+            vendedorId: vendedor.id,
+            evento: evento.tema,
+            vendedor: vendedor.nombre,
+            vendidos: tickets.length,
+            compradores: tickets.map(t => ({ numero: t.numero, nombre: t.nombre }))
+        });
+    }
+
+    function renderQrEnContenedor(containerId, qrName, payload) {
+        const box = document.getElementById(containerId);
+        box.innerHTML = '';
+        if (window[qrName]) {
+            window[qrName].clear();
+        }
+        window[qrName] = new QRCode(box, {
+            text: payload,
+            width: 220,
+            height: 220,
+            colorDark: "#0C447C",
+            colorLight: "#FFFFFF",
+            correctLevel: QRCode.CorrectLevel.M
+        });
+    }
+
+    function slugifyNombre(texto) {
+        return String(texto || 'qr')
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .replace(/[^a-zA-Z0-9]+/g, '_')
+            .replace(/^_+|_+$/g, '')
+            .toLowerCase();
+    }
+
+    function ocultarAccionesLoteQr() {
+        document.getElementById('qr-batch-actions').classList.add('hidden');
+        document.getElementById('qr-global-list').classList.add('hidden');
+        currentQrBatchTickets = [];
+        currentQrBatchTitle = '';
+        currentQrBatchFileName = '';
+    }
+
+    async function prepararTicketsConToken(tickets) {
+        for (const ticket of tickets) {
+            await asegurarQrTokenTicket(ticket);
+        }
+    }
+
+    function renderLoteQrs(tickets, titulo, descripcion, fileName) {
+        const box = document.getElementById('qr-global-box');
+        box.classList.remove('qr-box');
+        box.innerHTML = `<div style="width:100%;"><div class="scanner-log">${descripcion}</div><div id="qr-batch-grid" class="qr-batch-grid"></div></div>`;
+
+        const grid = document.getElementById('qr-batch-grid');
+        tickets.forEach((ticket, index) => {
+            const evento = dbEventos.find(e => e.id === ticket.eventoId);
+            const vendedor = dbVendedores.find(v => v.id === ticket.vendedorId);
+            const card = document.createElement('div');
+            const qrId = `qr-batch-item-${index}-${ticket.id}`;
+            card.className = 'qr-card';
+            card.innerHTML = `
+                <div class="qr-card-title">Ticket #${ticket.numero} - ${ticket.nombre}</div>
+                <div id="${qrId}" class="qr-card-qr"></div>
+                <div class="qr-card-info">
+                    Evento: ${evento ? evento.tema : 'N/A'}<br>
+                    Vendedor: ${vendedor ? vendedor.nombre : 'N/A'}<br>
+                    Grado/Seccion: ${ticket.grado} "${ticket.seccion}"<br>
+                    Estado: ${ticket.estado}
+                </div>
+            `;
+            grid.appendChild(card);
+            new QRCode(document.getElementById(qrId), {
+                text: construirPayloadQrTicket(ticket),
+                width: 180,
+                height: 180,
+                colorDark: "#0C447C",
+                colorLight: "#FFFFFF",
+                correctLevel: QRCode.CorrectLevel.M
+            });
+        });
+
+        currentQrBatchTickets = tickets.slice();
+        currentQrBatchTitle = titulo;
+        currentQrBatchFileName = fileName;
+        document.getElementById('qr-summary').innerText = titulo;
+        document.getElementById('qr-global-list').classList.remove('hidden');
+        document.getElementById('qr-global-list').innerHTML = tickets.map(t => `#${t.numero} - ${t.nombre}`).join('<br>');
+        document.getElementById('qr-batch-actions').classList.remove('hidden');
+    }
+
+    async function crearPdfBlobDeElemento(element, fileName) {
+        const worker = html2pdf().set({
+            margin: 8,
+            filename: fileName,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true, logging: false },
+            jsPDF: { unit: 'mm', format: 'letter', orientation: 'portrait' },
+            pagebreak: { mode: ['css', 'legacy'] }
+        }).from(element).toPdf();
+
+        return worker.outputPdf('blob');
+    }
+
+    async function descargarPdfLoteQr() {
+        if (!currentQrBatchTickets.length) return alert('Primero genera los QRs.');
+        const elemento = document.getElementById('qr-global-box');
+        await html2pdf().set({
+            margin: 8,
+            filename: `${currentQrBatchFileName || 'qrs'}.pdf`,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true, logging: false },
+            jsPDF: { unit: 'mm', format: 'letter', orientation: 'portrait' },
+            pagebreak: { mode: ['css', 'legacy'] }
+        }).from(elemento).save();
+    }
+
+    async function compartirLoteQr() {
+        if (!currentQrBatchTickets.length) return alert('Primero genera los QRs.');
+
+        const elemento = document.getElementById('qr-global-box');
+        try {
+            const blob = await crearPdfBlobDeElemento(elemento, `${currentQrBatchFileName || 'qrs'}.pdf`);
+            const file = new File([blob], `${currentQrBatchFileName || 'qrs'}.pdf`, { type: 'application/pdf' });
+
+            if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+                await navigator.share({
+                    title: currentQrBatchTitle,
+                    text: currentQrBatchTitle,
+                    files: [file]
+                });
+                return;
+            }
+
+            await html2pdf().set({
+                margin: 8,
+                filename: `${currentQrBatchFileName || 'qrs'}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true, logging: false },
+                jsPDF: { unit: 'mm', format: 'letter', orientation: 'portrait' },
+                pagebreak: { mode: ['css', 'legacy'] }
+            }).from(elemento).save();
+            alert('Tu navegador no permite compartir archivos desde aqui. Se descargo el PDF para compartirlo manualmente.');
+        } catch (error) {
+            console.log('Error al compartir lote QR', error);
+            alert('No se pudo compartir el lote de QRs.');
+        }
+    }
+
+    async function abrirQrTicket(id) {
+        const ticket = dbTickets.find(t => t.id === id);
+        if (!ticket) return alert("No se encontro el ticket.");
+
+        currentQrTicketId = id;
+        const evento = dbEventos.find(e => e.id === ticket.eventoId);
+        const vendedor = dbVendedores.find(v => v.id === ticket.vendedorId);
+        await asegurarQrTokenTicket(ticket);
+        const payload = construirPayloadQrTicket(ticket);
+
+        document.getElementById('qr-ticket-info').innerText = `Evento: ${evento ? evento.tema : 'N/A'} | Ticket #${ticket.numero} | Cliente: ${ticket.nombre}`;
+        document.getElementById('qr-ticket-text').innerHTML = `
+            <strong>Cliente:</strong> ${ticket.nombre}<br>
+            <strong>Vendedor:</strong> ${vendedor ? vendedor.nombre : 'N/A'}<br>
+            <strong>Grado/Seccion:</strong> ${ticket.grado} "${ticket.seccion}"<br>
+            <strong>Estado:</strong> ${ticket.estado}
+        `;
+        renderQrEnContenedor('qr-ticket-box', 'qrCodeTicket', payload);
+        abrirModal('modal-qr-ticket');
+    }
+
+    function abrirModalQrs() {
+        const vendedores = dbVendedores.filter(v => v.eventoId === currentEventoId);
+        const sel = document.getElementById('sel-qr-vendedor');
+        sel.innerHTML = '';
+        vendedores.forEach(v => {
+            sel.innerHTML += `<option value="${v.id}">${v.nombre}</option>`;
+        });
+        if (currentVendedorId !== null) {
+            sel.value = String(currentVendedorId);
+        }
+
+        currentQrBatchTickets = [];
+        currentQrBatchTitle = '';
+        currentQrBatchFileName = '';
+        document.getElementById('qr-summary').innerText = '';
+        document.getElementById('qr-global-box').className = 'qr-box';
+        document.getElementById('qr-global-list').innerHTML = '';
+        document.getElementById('qr-global-box').innerHTML = '<span style="color: var(--gray-600);">Aqui aparecera el QR generado.</span>';
+        ocultarAccionesLoteQr();
+        abrirModal('modal-qrs');
+    }
+
+    async function crearQrEvento() {
+        const evento = dbEventos.find(e => e.id === currentEventoId);
+        const tickets = dbTickets.filter(t => t.eventoId === currentEventoId).sort((a, b) => parseInt(a.numero) - parseInt(b.numero));
+
+        if (!evento) return alert("No se encontro el evento.");
+        if (tickets.length === 0) return alert("Este evento todavia no tiene tickets vendidos.");
+
+        const password = prompt('Crear QR Evento requiere clave. Ingresa la contrasena:');
+        if (password !== '747-8') {
+            return alert('Contrasena incorrecta.');
+        }
+
+        await prepararTicketsConToken(tickets);
+        renderLoteQrs(
+            tickets,
+            `QRs del evento ${evento.tema} (${tickets.length} tickets)`,
+            `Se generaron todos los QRs del evento <strong>${evento.tema}</strong>. Cada ticket tiene su QR individual y unico.`,
+            `qrs_evento_${slugifyNombre(evento.tema)}`
+        );
+    }
+
+    async function crearQrVendedor() {
+        const vendedorId = parseInt(document.getElementById('sel-qr-vendedor').value);
+        if (!vendedorId) return alert("Selecciona un vendedor.");
+
+        const evento = dbEventos.find(e => e.id === currentEventoId);
+        const vendedor = dbVendedores.find(v => v.id === vendedorId);
+        const tickets = dbTickets.filter(t => t.vendedorId === vendedorId).sort((a, b) => parseInt(a.numero) - parseInt(b.numero));
+
+        if (!vendedor) return alert("No se encontro el vendedor.");
+        if (tickets.length === 0) return alert("Este vendedor todavia no tiene tickets vendidos.");
+
+        await prepararTicketsConToken(tickets);
+        renderLoteQrs(
+            tickets,
+            `QRs del vendedor ${vendedor.nombre} (${tickets.length} tickets)`,
+            `Se generaron todos los QRs del vendedor <strong>${vendedor.nombre}</strong> para el evento <strong>${evento ? evento.tema : 'N/A'}</strong>.`,
+            `qrs_vendedor_${slugifyNombre(vendedor.nombre)}`
+        );
+    }
+
+    function abrirModalQrLector() {
+        cerrarModal('modal-qrs');
+        document.getElementById('qr-reader-status').innerText = 'Esperando inicio del lector...';
+        abrirModal('modal-qr-lector');
+    }
+
+    async function iniciarQrLector() {
+        if (typeof Html5Qrcode === 'undefined') {
+            return alert('La libreria del lector QR no cargo.');
+        }
+        if (html5QrScanner) {
+            document.getElementById('qr-reader-status').innerText = 'El lector ya esta activo.';
+            return;
+        }
+
+        html5QrScanner = new Html5Qrcode("qr-reader");
+        document.getElementById('qr-reader-status').innerText = 'Inicializando camara...';
+
+        try {
+            await html5QrScanner.start(
+                { facingMode: "environment" },
+                { fps: 10, qrbox: { width: 240, height: 240 } },
+                onQrDetectado,
+                () => {}
+            );
+            document.getElementById('qr-reader-status').innerText = 'Lector activo. Apunta al QR del cliente.';
+        } catch (error) {
+            html5QrScanner = null;
+            document.getElementById('qr-reader-status').innerText = 'No se pudo iniciar la camara.';
+            alert('No se pudo iniciar el lector QR.');
+        }
+    }
+
+    async function detenerQrLector() {
+        if (!html5QrScanner) return;
+        try {
+            await html5QrScanner.stop();
+            await html5QrScanner.clear();
+        } catch (error) {
+            console.log('No se pudo detener el lector', error);
+        }
+        html5QrScanner = null;
+    }
+
+    async function cerrarModalQrLector() {
+        await detenerQrLector();
+        cerrarModal('modal-qr-lector');
+    }
+
+    async function onQrDetectado(decodedText) {
+        const ahora = Date.now();
+        if (decodedText === ultimoQrDetectado && (ahora - ultimoQrDetectadoTs) < 2500) return;
+        ultimoQrDetectado = decodedText;
+        ultimoQrDetectadoTs = ahora;
+
+        let payload;
+        try {
+            payload = JSON.parse(decodedText);
+        } catch (error) {
+            document.getElementById('qr-reader-status').innerText = 'El QR leido no pertenece al sistema.';
+            return;
+        }
+
+        if (!payload || payload.tipo !== 'ticket-cliente' || !payload.qrToken) {
+            document.getElementById('qr-reader-status').innerText = 'QR valido, pero no es un QR de ticket cliente.';
+            return;
+        }
+
+        const ticket = dbTickets.find(t => t.qrToken === payload.qrToken);
+        if (!ticket) {
+            document.getElementById('qr-reader-status').innerText = 'No se encontro el ticket de este QR.';
+            return;
+        }
+
+        if (ticket.estado === 'Ya retiró su producto') {
+            document.getElementById('qr-reader-status').innerText = `Ticket #${ticket.numero} ya estaba retirado.`;
+            return;
+        }
+
+        const evento = dbEventos.find(e => e.id == ticket.eventoId);
+        ticket.pagado = evento ? (parseFloat(evento.precio) || 0) : (parseFloat(ticket.pagado) || 0);
+        ticket.estado = 'Ya retiró su producto';
+        ticket.fechaPago = new Date().toLocaleString('es-ES');
+
+        await syncPost({ tipo_post: "actualizar_estado", id: ticket.id, estado: ticket.estado, pagado: ticket.pagado, fechaPago: ticket.fechaPago });
+
+        document.getElementById('qr-reader-status').innerHTML = `
+            <strong>Ticket procesado:</strong> #${ticket.numero} - ${ticket.nombre}<br>
+            <strong>Estado:</strong> Pagado completo y retirado
+        `;
+
+        if (currentVendedorId !== null) renderVendedorDetalle();
+        if (document.getElementById('modal-buscador').classList.contains('open')) ejecutarBusqueda();
     }
 
     // 8. RESUMEN
