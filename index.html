@@ -11,15 +11,25 @@
   <style>
     :root {
         --blue-800: #0C447C;
+        --blue-700: #0F5290;
         --blue-600: #185FA5;
         --blue-50: #E6F1FB;
+        --green-700: #187E5D;
         --green-600: #1D9E75;
+        --red-700: #8F1616;
         --red-600: #B71C1C;
         --gray-900: #2C2C2A;
         --gray-600: #5F5E5A;
         --gray-100: #D3D1C7;
         --gray-50: #F0F2F5;
+        --amber-700: #965F12;
         --amber-600: #BA7517;
+
+        --shadow-sm: 0 1px 3px rgba(12,68,124,0.08);
+        --shadow-md: 0 4px 14px rgba(12,68,124,0.10);
+        --shadow-lg: 0 10px 30px rgba(12,68,124,0.16);
+        --radius: 10px;
+        --transition: 0.18s ease;
     }
 
     * {
@@ -29,22 +39,31 @@
         font-family: 'Segoe UI', Tahoma, sans-serif;
     }
 
+    html { scroll-behavior: smooth; }
+
     body {
         background-color: var(--gray-50);
         color: var(--gray-900);
         padding-bottom: 50px;
         overflow-x: hidden;
+        -webkit-font-smoothing: antialiased;
+        line-height: 1.4;
     }
+
+    ::selection { background: var(--blue-600); color: white; }
 
     /* HEADER Y LOGOS */
     .header {
-        background-color: var(--blue-800);
+        background: linear-gradient(135deg, var(--blue-800), var(--blue-700));
         color: white;
         padding: 15px 20px;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        box-shadow: var(--shadow-md);
+        position: sticky;
+        top: 0;
+        z-index: 500;
     }
 
     .header h1 { font-size: 20px; margin: 0; }
@@ -72,24 +91,40 @@
         font-weight: bold;
         cursor: pointer;
         font-size: 13px;
+        transition: filter var(--transition), transform var(--transition);
     }
+    .btn-back:hover { filter: brightness(1.1); }
+    .btn-back:active { transform: scale(0.97); }
 
     .container { max-width: 900px; margin: 20px auto; padding: 0 20px; }
-    .panel { background: white; border-radius: 10px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-    
+    .panel { background: white; border-radius: var(--radius); padding: 20px; margin-bottom: 20px; box-shadow: var(--shadow-sm); border: 1px solid rgba(12,68,124,0.06); }
+
     .view-section { display: none; }
-    .view-active { display: block; }
+    .view-active { display: block; animation: fadeIn 0.25s ease; }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
     /* INPUTS & BUTTONS */
-    label { font-weight: bold; font-size: 12px; color: var(--gray-600); display: block; margin-bottom: 5px; text-transform: uppercase; }
+    label { font-weight: bold; font-size: 12px; color: var(--gray-600); display: block; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.3px; }
     input[type="text"], input[type="password"], input[type="number"], select {
         width: 100%; padding: 10px; margin-bottom: 15px; border: 1.5px solid var(--gray-100); border-radius: 8px; font-size: 14px; outline: none;
+        transition: border-color var(--transition), box-shadow var(--transition);
+        background: white;
+    }
+    input[type="text"]:focus, input[type="password"]:focus, input[type="number"]:focus, select:focus {
+        border-color: var(--blue-600); box-shadow: 0 0 0 3px rgba(24,95,165,0.15);
     }
     input[readonly] { background-color: #e9ecef; color: var(--blue-800); font-weight: bold; cursor: not-allowed; }
-    
+
     .btn {
         padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; border: none; color: white; text-align: center; width: 100%; font-size: 14px; margin-bottom: 10px;
+        transition: filter var(--transition), transform var(--transition), box-shadow var(--transition);
+        box-shadow: var(--shadow-sm);
     }
+    .btn:hover { filter: brightness(1.08); box-shadow: var(--shadow-md); }
+    .btn:active { transform: translateY(1px) scale(0.99); filter: brightness(0.96); }
+    .btn:focus-visible { outline: 2px solid white; outline-offset: -4px; }
+    .btn:disabled { opacity: 0.55; cursor: not-allowed; filter: none; transform: none; }
 
     .btn-blue { background-color: var(--blue-600); }
     .btn-green { background-color: var(--green-600); }
@@ -101,8 +136,9 @@
     /* TABLAS GRID */
     .list-container { border: 1px solid var(--gray-100); border-radius: 8px; overflow: hidden; margin-top: 15px; }
     .list-header { background-color: var(--blue-800); color: white; font-weight: bold; font-size: 12px; padding: 12px 15px; display: grid; }
-    .list-item { padding: 12px 15px; border-bottom: 1px solid var(--gray-100); display: grid; align-items: center; font-size: 14px; cursor: pointer; transition: 0.2s; }
-    .list-item:hover { background-color: var(--blue-50); }
+    .list-item { padding: 12px 15px; border-bottom: 1px solid var(--gray-100); display: grid; align-items: center; font-size: 14px; cursor: pointer; transition: background-color var(--transition), transform var(--transition); }
+    .list-item:last-child { border-bottom: none; }
+    .list-item:hover { background-color: var(--blue-50); transform: translateX(2px); }
     
     .grid-events { grid-template-columns: 2fr 1fr; }
     .grid-sellers { grid-template-columns: 2fr 1fr 1fr; }
@@ -119,11 +155,15 @@
     .status-retirado { background: var(--blue-600); color: white; }
 
     /* MODALES */
-    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 1000; align-items: center; justify-content: center; }
-    .modal-overlay.open { display: flex; }
-    .modal { background: white; padding: 25px; border-radius: 12px; width: 90%; max-width: 480px; max-height: 90vh; overflow-y: auto; }
-    
-    #login-overlay { background: var(--blue-800); z-index: 9999; }
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(12,20,30,0.55); backdrop-filter: blur(2px); z-index: 1000; align-items: center; justify-content: center; }
+    .modal-overlay.open { display: flex; animation: overlayIn 0.15s ease; }
+    .modal { background: white; padding: 25px; border-radius: 14px; width: 90%; max-width: 480px; max-height: 90vh; overflow-y: auto; box-shadow: var(--shadow-lg); animation: modalIn 0.2s cubic-bezier(.2,.8,.3,1); }
+
+    @keyframes overlayIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes modalIn { from { opacity: 0; transform: translateY(10px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+
+    #login-overlay { background: radial-gradient(circle at 50% 20%, var(--blue-700), var(--blue-800) 70%); z-index: 9999; }
+    #login-overlay .modal { animation: modalIn 0.35s cubic-bezier(.2,.8,.3,1); }
     
     #pantalla-mantenimiento {
         display: none; position: fixed; inset: 0; background-color: rgba(250, 250, 250, 0.98); z-index: 99999; flex-direction: column; justify-content: center; align-items: center; text-align: center;
@@ -155,6 +195,19 @@
     .pdf-report th { background: #0C447C; color: white; }
     .pdf-report tr { page-break-inside: avoid; break-inside: avoid; }
     .hidden { display: none !important; }
+
+    /* RESPONSIVE: pantallas angostas (celulares) */
+    @media (max-width: 480px) {
+        .container { padding: 0 12px; margin: 12px auto; }
+        .panel { padding: 14px; border-radius: 8px; }
+        .header { padding: 12px 14px; }
+        .header h1 { font-size: 17px; }
+        .modal { padding: 18px; border-radius: 10px; }
+        .grid-tickets { grid-template-columns: 45px 2fr 1fr 1fr; gap: 6px; font-size: 12px; }
+        .list-header, .list-item { padding: 10px 8px; font-size: 12px; }
+        .btn { font-size: 13px; padding: 11px; }
+        .qr-batch-grid { grid-template-columns: 1fr 1fr; }
+    }
   </style>
 </head>
 <body>
@@ -212,6 +265,7 @@
           <h2 style="color: var(--blue-800);">Seleccionar Evento</h2>
           <button class="btn btn-green admin-only" style="width: auto; padding: 8px 15px; margin: 0;" onclick="abrirModal('modal-evento')">+ Nuevo Evento</button>
         </div>
+        <div id="resumen-global-admin" class="admin-only" style="display:none;"></div>
         <div class="list-container">
           <div class="list-header grid-events">
             <div>Tema / Nombre del Evento</div>
@@ -235,6 +289,7 @@
         <div class="btn-row" style="margin-bottom: 20px; flex-wrap: wrap;">
           <button class="btn btn-gray" style="flex: 1;" onclick="abrirModalPdf()">📄 Generar PDF</button>
           <button class="btn" style="flex: 1; background: var(--amber-600);" onclick="abrirModalQrs()">QR-s</button>
+          <button class="btn" style="flex: 1; background: var(--green-700);" onclick="exportarEventoCSV()">📊 Exportar CSV</button>
         </div>
         <div class="section-search">
           <input type="text" id="buscar-vendedor" placeholder="Buscar vendedor..." oninput="renderEventoDetalle()">
@@ -588,7 +643,13 @@
     let currentRegistroTickets = [];
     let currentRegistroNombre = '';
 
-    const ADMIN_MASTER_PASSWORD = "747-8";
+    // Sesión de seguridad: el backend emite este token al hacer login y lo
+    // exige para cualquier acción que modifique datos. Ya no hay contraseñas
+    // escritas en este archivo — todo se valida contra el servidor.
+    let sessionToken = null;
+    let sessionRol = null;
+    let sessionLoginTs = null;
+    const SESSION_DURACION_MS = 4 * 60 * 60 * 1000; // 4 horas, debe coincidir con el backend
 
     function tieneBackend() {
         return SCRIPT_URL && SCRIPT_URL.includes("script.google.com/macros/s/");
@@ -620,7 +681,10 @@
             directEventMode,
             currentEventoId,
             currentVendedorId,
-            roleText: document.getElementById('user-role').innerText || ''
+            roleText: document.getElementById('user-role').innerText || '',
+            sessionToken,
+            sessionRol,
+            sessionLoginTs
         }));
     }
 
@@ -650,10 +714,21 @@
             const sesion = JSON.parse(localStorage.getItem('ticketsAppSession') || '{}');
             if (!sesion.loggedIn) return false;
 
+            // Si la sesión de seguridad ya venció (o no existe), no la restauramos:
+            // pedimos iniciar sesión de nuevo para obtener un token válido.
+            const loginTs = sesion.sessionLoginTs || 0;
+            if (!sesion.sessionToken || (Date.now() - loginTs) > SESSION_DURACION_MS) {
+                limpiarSesionActiva();
+                return false;
+            }
+
             isAdmin = !!sesion.isAdmin;
             directEventMode = !!sesion.directEventMode;
             currentEventoId = sesion.currentEventoId ?? null;
             currentVendedorId = sesion.currentVendedorId ?? null;
+            sessionToken = sesion.sessionToken;
+            sessionRol = sesion.sessionRol || (isAdmin ? 'admin' : 'vendedor');
+            sessionLoginTs = loginTs;
             mostrarAppAutenticada(sesion.roleText || (isAdmin ? "MODO ADMINISTRADOR" : "MODO VENDEDOR"));
 
             if (currentVendedorId !== null && dbVendedores.some(v => v.id == currentVendedorId)) {
@@ -678,13 +753,25 @@
 
     async function syncPost(payload) {
         if (tieneBackend()) {
+            // El token de sesión viaja en cada escritura; el backend lo exige
+            // para aceptar cualquier cambio (ver Code.gs).
+            const payloadConToken = Object.assign({ token: sessionToken }, payload);
             await fetch(SCRIPT_URL, {
                 method: 'POST',
                 mode: 'no-cors',
-                body: JSON.stringify(payload)
+                body: JSON.stringify(payloadConToken)
             });
         }
         guardarCacheLocal();
+    }
+
+    // Llama a un endpoint GET del backend y devuelve el JSON de respuesta.
+    // A diferencia de syncPost (no-cors, "a ciegas"), aquí sí necesitamos
+    // leer la respuesta (ej. para saber si el login fue correcto).
+    async function backendGet(params) {
+        const qs = new URLSearchParams(params).toString();
+        const res = await fetch(SCRIPT_URL + "?" + qs);
+        return await res.json();
     }
 
     function generarQrTokenSeguro() {
@@ -752,14 +839,19 @@
     };
 
     // FUNCION PARA ACTIVAR/DESACTIVAR EL APAGÓN (MANTENIMIENTO)
+    // La clave maestra ahora se valida contra el servidor (Code.gs / Propiedades
+    // del script), no contra un texto escrito aquí en el navegador.
     async function toggleMantenimiento() {
         const password = prompt("ADVERTENCIA: ¿Deseas activar/desactivar el Apagón Global?\nIngresa clave maestra:");
-        if (password !== ADMIN_MASTER_PASSWORD) {
-            return alert("❌ Clave incorrecta. Acceso Denegado.");
-        }
-        
+        if (password === null) return;
+
         document.body.style.cursor = "wait";
         try {
+            const check = await backendGet({ tipo: 'verificar_clave_maestra', password });
+            if (!check.valido) {
+                document.body.style.cursor = "default";
+                return alert("❌ Clave incorrecta. Acceso Denegado.");
+            }
             await syncPost({ tipo_post: "toggle_mantenimiento", password: password });
             alert("📡 Orden enviada a la Nube."); 
             setTimeout(() => { location.reload(); }, 1500);
@@ -770,32 +862,59 @@
     }
 
     // 1. LOGIN MEJORADO (Admite ingreso directo por Evento)
-    function verificarLogin() {
+    // Ahora es asíncrono: la contraseña se verifica en el servidor y, si es
+    // correcta, el servidor entrega un token de sesión temporal (4 horas).
+    // Ese token es lo que se exige después para poder guardar cualquier cambio.
+    async function verificarLogin() {
         const pass = document.getElementById('login-pass').value.trim();
         if(!pass) return alert("Ingrese código de acceso.");
 
-        if(pass === "Admin") {
-            isAdmin = true;
-            directEventMode = false;
-            iniciarSistemaGlobal("MODO ADMINISTRADOR");
-        } else if (pass === "1234") {
-            isAdmin = false;
-            directEventMode = false;
-            iniciarSistemaGlobal("MODO VENDEDOR");
-        } else {
-            // Verificar si el texto escrito coincide con el nombre de algún evento
+        if (!tieneBackend()) {
+            return alert("⚠️ No hay backend configurado; no se puede iniciar sesión de forma segura.");
+        }
+
+        const btn = document.getElementById('btn-login-ingresar');
+        btn.disabled = true;
+        btn.innerText = "Verificando...";
+
+        try {
+            // Primero probamos si el texto coincide con el nombre de un evento
+            // (entrada directa, ya usada antes en esta app).
             const eventoEncontrado = dbEventos.find(e => e.tema.toLowerCase() === pass.toLowerCase());
-            
+
+            let resp;
             if (eventoEncontrado) {
-                isAdmin = false;
+                resp = await backendGet({ tipo: 'login', modo: 'evento', eventoId: eventoEncontrado.id });
+            } else {
+                resp = await backendGet({ tipo: 'login', password: pass });
+            }
+
+            if (!resp.ok) {
+                alert("❌ " + (resp.mensaje || "Contraseña o evento incorrecto."));
+                btn.disabled = false;
+                btn.innerText = "Entrar al Sistema";
+                return;
+            }
+
+            sessionToken = resp.token;
+            sessionRol = resp.rol;
+            sessionLoginTs = Date.now();
+            isAdmin = (resp.rol === 'admin');
+
+            if (eventoEncontrado) {
                 directEventMode = true; // Se bloquea al usuario en este evento
                 mostrarAppAutenticada("MODO VENDEDOR");
-                
-                // Va directo al evento encontrado
                 abrirEvento(eventoEncontrado.id);
+                guardarSesionActiva();
             } else {
-                alert("❌ Contraseña o Evento incorrecto.");
+                directEventMode = false;
+                iniciarSistemaGlobal(isAdmin ? "MODO ADMINISTRADOR" : "MODO VENDEDOR");
             }
+        } catch (e) {
+            console.log(e);
+            alert("❌ Error de red al iniciar sesión.");
+            btn.disabled = false;
+            btn.innerText = "Entrar al Sistema";
         }
     }
 
@@ -817,6 +936,9 @@
         currentVendedorId = null;
         editMode = false;
         directEventMode = false;
+        sessionToken = null;
+        sessionRol = null;
+        sessionLoginTs = null;
     }
 
     // 3. VISTAS
@@ -946,7 +1068,37 @@
     }
 
     // 4. EVENTOS
+    function renderResumenGlobalAdmin() {
+        const resumenEl = document.getElementById('resumen-global-admin');
+        if (!resumenEl) return;
+        if (!isAdmin) { resumenEl.style.display = 'none'; return; }
+
+        const totalEventos = dbEventos.length;
+        const totalTicketsVendidos = dbTickets.length;
+        const totalRecaudadoGlobal = dbTickets.reduce((sum, t) => sum + (parseFloat(t.pagado) || 0), 0);
+
+        resumenEl.style.display = 'flex';
+        resumenEl.style.gap = '12px';
+        resumenEl.style.flexWrap = 'wrap';
+        resumenEl.style.marginBottom = '15px';
+        resumenEl.innerHTML = `
+            <div style="flex:1; min-width:140px; background:var(--blue-50); border-radius:8px; padding:12px 15px;">
+                <div style="font-size:11px; color:var(--gray-600); font-weight:bold; text-transform:uppercase;">Eventos activos</div>
+                <div style="font-size:22px; font-weight:bold; color:var(--blue-800);">${totalEventos}</div>
+            </div>
+            <div style="flex:1; min-width:140px; background:var(--blue-50); border-radius:8px; padding:12px 15px;">
+                <div style="font-size:11px; color:var(--gray-600); font-weight:bold; text-transform:uppercase;">Tickets vendidos (todos)</div>
+                <div style="font-size:22px; font-weight:bold; color:var(--green-600);">${totalTicketsVendidos}</div>
+            </div>
+            <div style="flex:1; min-width:140px; background:var(--blue-50); border-radius:8px; padding:12px 15px;">
+                <div style="font-size:11px; color:var(--gray-600); font-weight:bold; text-transform:uppercase;">Recaudado global</div>
+                <div style="font-size:22px; font-weight:bold; color:var(--blue-600);">$${totalRecaudadoGlobal.toFixed(2)}</div>
+            </div>
+        `;
+    }
+
     function renderEventos() {
+        renderResumenGlobalAdmin();
         const contenedor = document.getElementById('lista-eventos');
         contenedor.innerHTML = '';
         
@@ -1356,10 +1508,12 @@
     async function guardarAumentoTickets() {
         const pass = document.getElementById('req-pass').value;
         const extra = parseInt(document.getElementById('req-extra').value);
-        
-        if(pass !== ADMIN_MASTER_PASSWORD) return alert("❌ Contraseña de administrador incorrecta.");
+
         if(!extra || extra <= 0) return alert("Ingrese una cantidad válida.");
-        
+
+        const check = await backendGet({ tipo: 'verificar_clave_maestra', password: pass });
+        if (!check.valido) return alert("❌ Contraseña de administrador incorrecta.");
+
         const ev = dbEventos.find(e => e.id == currentEventoId);
         const vends = dbVendedores.filter(v => v.eventoId == currentEventoId);
         const totalAsignados = vends.reduce((acc, curr) => acc + parseInt(curr.asignados), 0);
@@ -1372,7 +1526,7 @@
         const v = dbVendedores.find(vend => vend.id == currentVendedorId);
         v.asignados = (parseInt(v.asignados) || 0) + extra; 
         
-        await syncPost({ tipo_post: "aumentar_asignacion", id: v.id, nuevos_asignados: v.asignados });
+        await syncPost({ tipo_post: "aumentar_asignacion", id: v.id, nuevos_asignados: v.asignados, password: pass });
         cerrarModal('modal-solicitar-mas');
         renderVendedorDetalle();
         alert(`✅ Se han añadido ${extra} tickets exitosamente.`);
@@ -1775,7 +1929,9 @@
         if (tickets.length === 0) return alert("Este evento todavia no tiene tickets vendidos.");
 
         const password = prompt('Crear QR Evento requiere clave. Ingresa la contrasena:');
-        if (password !== ADMIN_MASTER_PASSWORD) {
+        if (password === null) return;
+        const check = await backendGet({ tipo: 'verificar_clave_maestra', password });
+        if (!check.valido) {
             return alert('Contrasena incorrecta.');
         }
 
@@ -1970,6 +2126,57 @@
                 `;
         document.getElementById('resumen-content').innerHTML = html;
         abrirModal('modal-resumen');
+    }
+
+    // 8b. EXPORTAR A CSV (Excel) - todos los tickets del evento actual
+    function csvEscape(valor) {
+        const texto = String(valor === undefined || valor === null ? '' : valor);
+        if (/[",\n;]/.test(texto)) {
+            return '"' + texto.replace(/"/g, '""') + '"';
+        }
+        return texto;
+    }
+
+    function exportarEventoCSV() {
+        const ev = dbEventos.find(e => e.id == currentEventoId);
+        if (!ev) return alert("No se encontró el evento.");
+
+        const tickets = dbTickets
+            .filter(t => t.eventoId == currentEventoId)
+            .sort((a, b) => parseInt(a.numero) - parseInt(b.numero));
+
+        if (tickets.length === 0) return alert("Este evento todavía no tiene tickets registrados.");
+
+        const encabezados = ['N° Ticket', 'Vendedor', 'Comprador', 'Grado', 'Sección', 'Estado', 'Pagado ($)', 'Fecha de Venta', 'Fecha de Pago'];
+        const filas = tickets.map(t => {
+            const vendedor = dbVendedores.find(v => v.id == t.vendedorId);
+            return [
+                t.numero,
+                vendedor ? vendedor.nombre : '',
+                t.nombre,
+                t.grado,
+                t.seccion,
+                t.estado,
+                (parseFloat(t.pagado) || 0).toFixed(2),
+                t.fechaVenta,
+                t.fechaPago
+            ].map(csvEscape).join(',');
+        });
+
+        const totalRecaudado = tickets.reduce((sum, t) => sum + (parseFloat(t.pagado) || 0), 0);
+        filas.push('');
+        filas.push(['', '', '', '', '', 'TOTAL RECAUDADO', totalRecaudado.toFixed(2), '', ''].map(csvEscape).join(','));
+
+        const contenidoCSV = '\uFEFF' + encabezados.join(',') + '\n' + filas.join('\n');
+        const blob = new Blob([contenidoCSV], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const enlace = document.createElement('a');
+        enlace.href = url;
+        enlace.download = `tickets_${slugifyNombre(ev.tema)}.csv`;
+        document.body.appendChild(enlace);
+        enlace.click();
+        document.body.removeChild(enlace);
+        URL.revokeObjectURL(url);
     }
 
     // 9. PDF MODIFICADO
